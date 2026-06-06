@@ -1035,6 +1035,7 @@
         <button class="button" id="filtersBtn" type="button" title="Preview color filters">Filters</button>
         <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
         <button class="button icon save" id="saveBtn" type="button" title="Save current palette" aria-label="Save current palette"></button>
+        <button class="button icon" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link"></button>
         <button class="button icon" id="exportBtn" type="button" title="Export palette as PNG" aria-label="Export palette as PNG"></button>
         <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
       </div>
@@ -1167,6 +1168,7 @@
     const filtersBtn = document.getElementById("filtersBtn");
     const adjustBtn = document.getElementById("adjustBtn");
     const saveBtn = document.getElementById("saveBtn");
+    const shareBtn = document.getElementById("shareBtn");
     const exportBtn = document.getElementById("exportBtn");
     const themeBtn = document.getElementById("themeBtn");
     const adjustmentModal = document.getElementById("adjustmentModal");
@@ -1507,7 +1509,8 @@
         save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>',
         export: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>',
         x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>',
-        chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>'
+        chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>',
+        share: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>'
       };
       return icons[name] || "";
     }
@@ -1517,6 +1520,7 @@
       filtersBtn.innerHTML = `${iconSvg("filter")}<span>Filters</span>`;
       adjustBtn.innerHTML = iconSvg("sliders");
       saveBtn.innerHTML = iconSvg("save");
+      shareBtn.innerHTML = iconSvg("share");
       exportBtn.innerHTML = iconSvg("export");
     }
 
@@ -1988,6 +1992,13 @@
 
     function openAdjustments() {
       closeEditor();
+      // If the filter modal is open, close it without restoring so its
+      // current preview state becomes the baseline for adjustments.
+      if (!filterModal.hidden) {
+        filterModal.hidden = true;
+        filterBeforeOpen = activeFilter;
+        syncFilterControls();
+      }
       adjustmentBaseColors = copyPaletteEntries();
       isAdjusting = true;
       resetAdjustmentControls();
@@ -2441,6 +2452,51 @@
       renderPalette();
     }
 
+    function sharePalette() {
+      const hexes = colors.map((c) => c.hex.replace("#", "")).join("-");
+      const names = colors.map((c) => encodeURIComponent(c.name || "")).join("-");
+      const hash = `#palette=${hexes}&names=${names}`;
+      const url = window.location.href.split("#")[0] + hash;
+      if (navigator.clipboard && window.isSecureContext) {
+        navigator.clipboard.writeText(url).then(() => showToast("Share link copied!")).catch(() => {
+          fallbackCopyText(url);
+        });
+      } else {
+        fallbackCopyText(url);
+      }
+    }
+
+    function fallbackCopyText(text) {
+      const el = document.createElement("textarea");
+      el.value = text;
+      el.style.position = "fixed";
+      el.style.opacity = "0";
+      document.body.append(el);
+      el.focus();
+      el.select();
+      document.execCommand("copy");
+      el.remove();
+      showToast("Share link copied!");
+    }
+
+    function loadPaletteFromUrl() {
+      try {
+        const hash = window.location.hash;
+        if (!hash || !hash.includes("palette=")) return false;
+        const params = new URLSearchParams(hash.slice(1));
+        const paletteParam = params.get("palette");
+        const namesParam = params.get("names") || "";
+        if (!paletteParam) return false;
+        const hexes = paletteParam.split("-").map((h) => normalizeHex(`#${h}`)).filter(Boolean);
+        if (hexes.length < 2) return false;
+        const namesList = namesParam.split("-").map((n) => decodeURIComponent(n));
+        colors = hexes.map((hex, i) => ({ hex, name: namesList[i] || "", locked: false }));
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     function savePalette() {
       const paletteColors = getPaletteColors();
       const hexes = paletteColors.map((color) => color.hex);
@@ -2554,6 +2610,7 @@
     filtersBtn.addEventListener("click", openFilters);
     adjustBtn.addEventListener("click", openAdjustments);
     saveBtn.addEventListener("click", savePalette);
+    shareBtn.addEventListener("click", sharePalette);
     exportBtn.addEventListener("click", exportImage);
     harmonySelect.addEventListener("change", persistPreviewControls);
     themeBtn.addEventListener("click", toggleTheme);
@@ -2621,6 +2678,10 @@
     loadGeneratorControls();
     colors = Array.from({ length: 5 }, () => ({ hex: "", name: "", locked: false }));
     colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: "", locked: false }));
+    if (!loadPaletteFromUrl()) {
+      colors = Array.from({ length: 5 }, () => ({ hex: "", name: "", locked: false }));
+      colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: "", locked: false }));
+    }
     renderPalette();
     renderSavedPalettes();
   </script>
