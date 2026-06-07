@@ -4,6 +4,9 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>PallleteGen™</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;700&display=swap">
   <link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20width%3D%22100%25%22%20height%3D%22100%25%22%20viewBox%3D%220%200%2046%2044%22%20version%3D%221.1%22%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20xmlns%3Axlink%3D%22http%3A%2F%2Fwww.w3.org%2F1999%2Fxlink%22%20xml%3Aspace%3D%22preserve%22%20xmlns%3Aserif%3D%22http%3A%2F%2Fwww.serif.com%2F%22%20style%3D%22fill-rule%3Aevenodd%3Bclip-rule%3Aevenodd%3Bstroke-linejoin%3Around%3Bstroke-miterlimit%3A2%3B%22%3E%3Cg%3E%3Crect%20x%3D%22-0%22%20y%3D%220%22%20width%3D%229.379%22%20height%3D%2243.245%22%20style%3D%22fill%3A%23d85870%3Bfill-rule%3Anonzero%3B%22%2F%3E%3Crect%20x%3D%2218.141%22%20y%3D%220%22%20width%3D%229.379%22%20height%3D%2243.245%22%20style%3D%22fill%3A%234dcf63%3Bfill-rule%3Anonzero%3B%22%2F%3E%3Crect%20x%3D%2236.281%22%20y%3D%220%22%20width%3D%229.379%22%20height%3D%2243.245%22%20style%3D%22fill%3A%23438fdf%3Bfill-rule%3Anonzero%3B%22%2F%3E%3C%2Fg%3E%3C%2Fsvg%3E">
   <style>
     :root {
@@ -2940,6 +2943,10 @@
     }
 
     async function exportImage() {
+      // Ensure Inter is loaded before drawing
+      await document.fonts.load("700 28px Inter");
+      await document.fonts.load("500 28px Inter");
+
       const width = 1600;
       const colorHeight = 900;
       const footerHeight = 130;
@@ -2964,7 +2971,6 @@
           rgbText(color.hex),
           hslText(color.hex)
         ];
-        ctx.font = `700 ${fontSize}px Arial, sans-serif`;
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
         ctx.shadowColor = getContrastColor(color.hex) === "#FFFFFF" ? "rgba(0, 0, 0, 0.28)" : "rgba(255, 255, 255, 0.24)";
@@ -2972,7 +2978,7 @@
         const bottomPadding = 58;
         const startY = colorHeight - bottomPadding - ((labelLines.length - 1) * lineHeight);
         labelLines.forEach((line, lineIndex) => {
-          ctx.font = `${lineIndex === 0 ? 700 : 500} ${fontSize}px Arial, sans-serif`;
+          ctx.font = `${lineIndex === 0 ? 700 : 500} ${fontSize}px Inter, ui-sans-serif, sans-serif`;
           ctx.fillText(line, x + swatchWidth / 2, startY + lineIndex * lineHeight, Math.max(96, swatchWidth - 18));
         });
         ctx.shadowBlur = 0;
@@ -2994,14 +3000,17 @@
         ctx.drawImage(logo, (width - logoWidth) / 2, colorHeight + (footerHeight - logoHeight) / 2, logoWidth, logoHeight);
       } catch {
         ctx.fillStyle = "#15171c";
-        ctx.font = "700 34px Arial, sans-serif";
+        ctx.font = "700 34px Inter, ui-sans-serif, sans-serif";
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
-        ctx.fillText("Palette Generator", width / 2, colorHeight + footerHeight / 2);
+        ctx.fillText("PallleteGen", width / 2, colorHeight + footerHeight / 2);
       }
 
+      // Filename: PallleteGen-[palette name].png
+      const paletteName = autoNamePalette(getPaletteColors());
+      const safeFileName = `PallleteGen-${paletteName.replace(/[^a-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "-")}`;
       const link = document.createElement("a");
-      link.download = `palette-${Date.now()}.png`;
+      link.download = `${safeFileName}.png`;
       link.href = canvas.toDataURL("image/png");
       link.click();
       showToast("Palette exported as PNG.");
