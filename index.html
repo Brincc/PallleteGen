@@ -1321,6 +1321,7 @@
     const storageKey = "color-palette-creator-saved";
     const themeStorageKey = "color-palette-creator-theme";
     const previewStorageKey = "color-palette-creator-preview";
+    const currentPaletteKey = "color-palette-creator-current";
     const minColors = 2;
     const maxColors = 12;
     let colors = [];
@@ -2231,6 +2232,29 @@
     }
 
 
+    function persistCurrentPalette() {
+      // Don't persist during adjustment preview — only persist committed state
+      if (isAdjusting) return;
+      localStorage.setItem(currentPaletteKey, JSON.stringify(
+        colors.map((c) => ({ hex: c.hex, name: c.name || "", locked: c.locked || false }))
+      ));
+    }
+
+    function loadCurrentPalette() {
+      try {
+        const parsed = JSON.parse(localStorage.getItem(currentPaletteKey) || "null");
+        if (!Array.isArray(parsed) || parsed.length < 2) return false;
+        const loaded = parsed
+          .map((c) => ({ hex: normalizeHex(c.hex), name: c.name || "", locked: !!c.locked }))
+          .filter((c) => c.hex);
+        if (loaded.length < 2) return false;
+        colors = loaded;
+        return true;
+      } catch {
+        return false;
+      }
+    }
+
     function makeUniqueHex(hsl, usedHexes) {
       let nextHsl = { ...hsl };
       let hex = hslToHex(nextHsl);
@@ -2712,6 +2736,7 @@
         paletteEl.append(swatch);
       });
       updateControls();
+      persistCurrentPalette();
     }
 
     function renderSavedPalettes() {
@@ -3055,7 +3080,7 @@
     loadSavedPalettes();
     loadTheme();
     loadGeneratorControls();
-    if (!loadPaletteFromUrl()) {
+    if (!loadPaletteFromUrl() && !loadCurrentPalette()) {
       colors = new Array(5).fill(null).map(() => ({ hex: "#000000", name: "", locked: false }));
       colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: closestCssName(hex), locked: false }));
     }
