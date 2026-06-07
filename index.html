@@ -2845,8 +2845,7 @@
 
     function sharePalette() {
       const hexes = colors.map((c) => c.hex.replace("#", "")).join("-");
-      const names = colors.map((c) => encodeURIComponent(c.name || "")).join("-");
-      const hash = `#palette=${hexes}&names=${names}`;
+      const hash = `#palette=${hexes}`;
       const url = window.location.href.split("#")[0] + hash;
       if (navigator.clipboard && window.isSecureContext) {
         navigator.clipboard.writeText(url).then(() => showToast("Share link copied!")).catch(() => {
@@ -2876,12 +2875,10 @@
         if (!hash || !hash.includes("palette=")) return false;
         const params = new URLSearchParams(hash.slice(1));
         const paletteParam = params.get("palette");
-        const namesParam = params.get("names") || "";
         if (!paletteParam) return false;
         const hexes = paletteParam.split("-").map((h) => normalizeHex(`#${h}`)).filter(Boolean);
         if (hexes.length < 2) return false;
-        const namesList = namesParam.split("-").map((n) => decodeURIComponent(n));
-        colors = hexes.map((hex, i) => ({ hex, name: namesList[i] || "", locked: false }));
+        colors = hexes.map((hex) => ({ hex, name: closestCssName(hex), locked: false }));
         return true;
       } catch {
         return false;
