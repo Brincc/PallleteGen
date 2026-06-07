@@ -1020,6 +1020,7 @@
             <select class="control-select harmony-select" id="harmonySelect" aria-label="Harmony scheme">
               <optgroup label="Harmony scheme">
                 <option value="random">Random</option>
+                <option value="smart">Smart</option>
                 <option value="analogous">Analogous</option>
                 <option value="complementary">Complementary</option>
                 <option value="split-complementary">Split complementary</option>
@@ -2156,7 +2157,87 @@
       return hex;
     }
 
+    // ─── Smart palette generator ───────────────────────────────────────────
+    // Builds a palette following key design principles:
+    //   • One deep neutral anchor (dark or light)
+    //   • One or two muted supporting tones (same temperature)
+    //   • One vivid accent on a harmonically related hue
+    //   • Spread across lightness values so no two slots feel the same weight
+    //   • Warm vs cool temperature bias randomised per generation
+    function generateSmartCuratedHexes() {
+      // Decide temperature bias for this generation
+      const warmBias = Math.random() > 0.5;
+
+      // Pick a base hue (biased toward visually interesting ranges)
+      const hueRanges = [[0, 40], [180, 260], [270, 340]];
+      const [hMin, hMax] = pickRandom(hueRanges);
+      const baseHue = Math.round(randomBetween(hMin, hMax));
+
+      // Accent hue: split-complementary offset (120°–150° away)
+      const accentOffset = pickRandom([120, 135, 150, 210, 225]);
+      const accentHue = wrapHue(baseHue + accentOffset);
+
+      // Temperature nudge on saturation and hue
+      const tempHueNudge = warmBias ? randomBetween(-8, 4) : randomBetween(-4, 8);
+      const tempSatNudge = warmBias ? randomBetween(4, 12) : randomBetween(-8, 0);
+
+      // Palette slots: [role, hue, sat, lightness]
+      // Roles: dark neutral, mid neutral, light neutral, muted support, vivid accent
+      const darkL  = Math.round(randomBetween(12, 22));
+      const midL   = Math.round(randomBetween(34, 46));
+      const lightL = Math.round(randomBetween(82, 94));
+      const supportL = Math.round(randomBetween(54, 68));
+      const accentL  = Math.round(randomBetween(44, 60));
+
+      // Neutral saturation: low but not zero — gives warmth/coolness character
+      const neutralSat = Math.round(randomBetween(6, 18) + tempSatNudge);
+      // Support saturation: muted — 25–45%
+      const supportSat = Math.round(randomBetween(24, 44) + tempSatNudge);
+      // Accent saturation: vivid — 70–92%
+      const accentSat  = Math.round(randomBetween(70, 92));
+
+      const neutralHue = wrapHue(baseHue + tempHueNudge);
+
+      // Build as many slots as there are colors, evenly spread across lightness.
+      // Always include one vivid accent (last slot) and keep the rest as
+      // neutrals/supports spread from dark to light with no two too close.
+      const count = colors.length;
+
+      // Spread lightness values evenly from darkL to lightL across (count-1) neutrals
+      const neutralCount = count - 1; // reserve one slot for the accent
+      const slots = [];
+
+      for (let i = 0; i < neutralCount; i++) {
+        const t = neutralCount === 1 ? 0.5 : i / (neutralCount - 1);
+        const l = Math.round(darkL + t * (lightL - darkL));
+        // Alternate between very low sat (neutral) and moderate sat (support)
+        const isMid = t > 0.2 && t < 0.8;
+        const s = isMid
+          ? clamp(Math.round(randomBetween(22, 44) + tempSatNudge), 0, 100)
+          : clamp(neutralSat, 0, 100);
+        slots.push({ h: neutralHue, s, l });
+      }
+
+      // Vivid accent always last
+      slots.push({ h: accentHue, s: accentSat, l: accentL });
+
+      const usedHexes = new Set(colors.filter((c) => c.locked).map((c) => c.hex));
+
+      return colors.map((color, index) => {
+        if (color.locked) return color.hex;
+        const slot = slots[Math.min(index, slots.length - 1)];
+        const jittered = {
+          h: wrapHue(slot.h + randomBetween(-4, 4)),
+          s: clamp(slot.s + randomBetween(-4, 4), 0, 100),
+          l: clamp(slot.l + randomBetween(-3, 3), 4, 96)
+        };
+        return makeUniqueHex(jittered, usedHexes);
+      });
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
     function generateSmartPaletteHexes() {
+      if (harmonySelect.value === "smart") return generateSmartCuratedHexes();
       const scheme = selectedHarmonyScheme();
       const anchor = paletteAnchor();
       const usedHexes = new Set(colors.filter((color) => color.locked).map((color) => color.hex));
