@@ -227,8 +227,6 @@
     }
 
     .button.save {
-      border-color: rgba(29, 139, 115, 0.35);
-      color: var(--save-ink);
     }
 
     .button.danger {
@@ -254,8 +252,27 @@
     }
 
     .button.theme-toggle {
-      min-width: 46px;
-      padding: 0 12px;
+      width: 42px;
+      min-width: 42px;
+      min-height: 42px;
+      padding: 0;
+    }
+
+    .theme-toggle-wrap {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      padding-left: 10px;
+      border-left: 1.5px solid var(--line);
+    }
+
+    .tool-group-wrap {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      padding: 0 10px;
+      border-left: 1.5px solid var(--line);
+      border-right: 1.5px solid var(--line);
     }
 
     .toolbar .button.icon {
@@ -315,6 +332,64 @@
       background: var(--swatch-color);
       cursor: pointer;
       transition: background-color 180ms ease, box-shadow 160ms ease, filter 160ms ease, transform 160ms ease;
+    }
+
+    .swatch-original-strip {
+      position: absolute;
+      top: 0;
+      left: 0;
+      right: 0;
+      height: 50%;
+      background: var(--original-color);
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .swatch-original-strip::after {
+      content: "";
+    }
+
+    .swatch:first-child .swatch-original-strip::after {
+      content: "before";
+      position: absolute;
+      bottom: 4px;
+      left: 8px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.52;
+      color: var(--original-label);
+    }
+
+    .swatch-after-label {
+      position: absolute;
+      top: 50%;
+      left: 8px;
+      margin-top: 4px;
+      font-size: 0.62rem;
+      font-weight: 700;
+      letter-spacing: 0.06em;
+      text-transform: uppercase;
+      opacity: 0.52;
+      pointer-events: none;
+      z-index: 0;
+    }
+
+    .swatch-divider {
+      position: absolute;
+      top: 50%;
+      left: 0;
+      right: 0;
+      height: 1.5px;
+      background: rgba(128,128,128,0.35);
+      pointer-events: none;
+      z-index: 1;
+    }
+
+    .swatch > *:not(.swatch-original-strip):not(.swatch-divider):not(.swatch-after-label) {
+      position: relative;
+      z-index: 2;
     }
 
     .swatch:hover {
@@ -425,18 +500,18 @@
       outline: none;
       appearance: none;
       cursor: copy;
+      user-select: text;
+      -webkit-user-select: text;
     }
 
     .swatch-name,
     .rgb-value {
-      cursor: default;
+      cursor: text;
       text-transform: none;
-      font-size: 0.84rem;
+      font-size: 0.78rem;
       line-height: 1.25;
-    }
-
-    .swatch-name {
-      font-weight: 800;
+      text-align: center;
+      opacity: 0.72;
     }
 
     .color-editor {
@@ -608,12 +683,19 @@
       background: var(--control);
     }
 
+    .editor-name-row {
+      display: flex;
+      gap: 6px;
+      align-items: center;
+      margin-bottom: 10px;
+    }
+
     .editor-name {
-      width: 100%;
+      flex: 1;
+      min-width: 0;
       min-height: 38px;
       border: 1px solid var(--line);
       border-radius: 8px;
-      margin-bottom: 10px;
       padding: 0 10px;
       color: var(--ink);
       background: var(--control);
@@ -1016,29 +1098,19 @@
       <div class="toolbar" aria-label="Palette controls">
         <div class="palette-generate-group">
           <button class="button primary" id="generateBtn" type="button" title="Generate unlocked colors">Generate</button>
-          <label class="harmony-picker" title="Harmony scheme">
-            <select class="control-select harmony-select" id="harmonySelect" aria-label="Harmony scheme">
-              <optgroup label="Harmony scheme">
-                <option value="random">Random</option>
-                <option value="smart">Smart</option>
-                <option value="analogous">Analogous</option>
-                <option value="complementary">Complementary</option>
-                <option value="split-complementary">Split complementary</option>
-                <option value="triadic">Triadic</option>
-                <option value="tetradic">Tetradic</option>
-                <option value="monochrome">Monochrome</option>
-              </optgroup>
-            </select>
-            <span class="harmony-icon"></span>
-          </label>
+
         </div>
         <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
-        <button class="button" id="filtersBtn" type="button" title="Preview color filters">Filters</button>
-        <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
+        <div class="tool-group-wrap">
+          <button class="button icon" id="filtersBtn" type="button" title="Preview color filters" aria-label="Preview color filters"></button>
+          <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
+        </div>
         <button class="button icon save" id="saveBtn" type="button" title="Save current palette" aria-label="Save current palette"></button>
         <button class="button icon" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link"></button>
         <button class="button icon" id="exportBtn" type="button" title="Export palette as PNG" aria-label="Export palette as PNG"></button>
-        <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
+        <div class="theme-toggle-wrap">
+          <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
+        </div>
       </div>
     </section>
 
@@ -1051,7 +1123,6 @@
         <div class="panel-header">
           <div>
             <h2 id="saved-title">Saved Color Palettes</h2>
-            <p>Saved in this browser and kept after reload.</p>
           </div>
         </div>
         <div class="saved-list" id="savedList"></div>
@@ -1161,9 +1232,7 @@
     const editorMode = document.getElementById("editorMode");
     const editorFields = document.getElementById("editorFields");
     const editorCloseBtn = document.getElementById("editorCloseBtn");
-    const harmonySelect = document.getElementById("harmonySelect");
-    const harmonyPicker = document.querySelector(".harmony-picker");
-    const harmonyIcon = document.querySelector(".harmony-icon");
+
     const generateBtn = document.getElementById("generateBtn");
     const addBtn = document.getElementById("addBtn");
     const filtersBtn = document.getElementById("filtersBtn");
@@ -1187,7 +1256,6 @@
 
     const storageKey = "color-palette-creator-saved";
     const themeStorageKey = "color-palette-creator-theme";
-    const harmonyStorageKey = "color-palette-creator-harmony";
     const previewStorageKey = "color-palette-creator-preview";
     const minColors = 2;
     const maxColors = 12;
@@ -1338,8 +1406,12 @@
       return `HSL ${h}, ${s}%, ${l}%`;
     }
 
+    function formatCssName(name) {
+      return name || "";
+    }
+
     function colorDisplayName(color, index) {
-      return color.name?.trim() || `Color ${index + 1}`;
+      return formatCssName(color.name?.trim() || closestCssName(color.hex));
     }
 
     function rgbToHsv({ r, g, b }) {
@@ -1413,9 +1485,13 @@
 
     function adjustedPaletteHex(hex, adjustments) {
       const hsl = rgbToHsl(hexToRgb(hex));
+      // Near-neutral colors (white, gray, black) have an arbitrary or undefined hue
+      // in HSL — typically clamped to 0° (red). Increasing saturation on them would
+      // turn them red, which is wrong. Keep them achromatic by clamping saturation to 0.
+      const isNeutral = hsl.s < 5;
       const shiftedRgb = hslToRgb({
         h: wrapHue(hsl.h + adjustments.hue),
-        s: clamp(hsl.s + adjustments.saturation, 0, 100),
+        s: isNeutral ? 0 : clamp(hsl.s + adjustments.saturation, 0, 100),
         l: clamp(hsl.l + adjustments.brightness, 0, 100)
       });
       const temperature = adjustments.temperature;
@@ -1518,7 +1594,7 @@
 
     function setToolbarIcons() {
       addBtn.innerHTML = `${iconSvg("plus")}<span>Add Color</span>`;
-      filtersBtn.innerHTML = `${iconSvg("filter")}<span>Filters</span>`;
+      filtersBtn.innerHTML = iconSvg("filter");
       adjustBtn.innerHTML = iconSvg("sliders");
       saveBtn.innerHTML = iconSvg("save");
       shareBtn.innerHTML = iconSvg("share");
@@ -1547,11 +1623,6 @@
     }
 
     function loadGeneratorControls() {
-      const storedHarmony = localStorage.getItem(harmonyStorageKey);
-      if (storedHarmony && harmonySelect.querySelector(`option[value="${storedHarmony}"]`)) {
-        harmonySelect.value = storedHarmony;
-      }
-
       try {
         const preview = JSON.parse(localStorage.getItem(previewStorageKey) || "{}");
         activeFilter = preview.filter || (preview.grayscale ? "grayscale" : "none");
@@ -1559,28 +1630,12 @@
         activeFilter = "none";
       }
       syncFilterControls();
-      syncHarmonyControl();
     }
 
     function persistPreviewControls() {
-      localStorage.setItem(harmonyStorageKey, harmonySelect.value);
       localStorage.setItem(previewStorageKey, JSON.stringify({
         filter: activeFilter
       }));
-      syncHarmonyControl();
-    }
-
-    function syncHarmonyControl() {
-      const selectedOption = harmonySelect.options[harmonySelect.selectedIndex];
-      Array.from(harmonySelect.options).forEach((option) => {
-        const label = option.dataset.label || option.textContent.replace(/^✓\s*/, "");
-        option.dataset.label = label;
-        option.textContent = option.selected ? `✓ ${label}` : label;
-      });
-      const label = selectedOption?.dataset.label || "Random";
-      harmonyPicker.title = `Harmony: ${label}`;
-      harmonySelect.title = `Harmony: ${label}`;
-      harmonyIcon.innerHTML = iconSvg("chevronDown");
     }
 
     function syncFilterControls() {
@@ -1608,19 +1663,19 @@
     function closeFilters({ restore = false } = {}) {
       if (restore) {
         activeFilter = filterBeforeOpen;
-        refreshPreview();
       }
       filterModal.hidden = true;
       filterBeforeOpen = activeFilter;
       syncFilterControls();
+      refreshPreview();
     }
 
     function applyFilter() {
       if (activeFilter !== "none") {
-        colors = colors.map((color) => ({
-          ...color,
-          hex: filteredHex(color.hex, activeFilter)
-        }));
+        colors = colors.map((color) => {
+          const hex = filteredHex(color.hex, activeFilter);
+          return { ...color, hex, name: closestCssName(hex) };
+        });
         activeFilter = "none";
         showToast("Filter applied to palette.");
       }
@@ -1689,6 +1744,13 @@
     function setEditingColor(hex, refreshEditor = false) {
       if (editingIndex === null || !colors[editingIndex]) return;
       colors[editingIndex].hex = hex;
+      if (!colors[editingIndex].nameLocked) {
+        colors[editingIndex].name = closestCssName(hex);
+        const nameInput = editorFields.querySelector(".editor-name");
+        if (nameInput) nameInput.value = colors[editingIndex].name;
+        const nameLockBtn = editorFields.querySelector(".name-lock-btn");
+        if (nameLockBtn) syncNameLockBtn(nameLockBtn, false);
+      }
       renderPalette();
       if (refreshEditor) updateEditor();
       else {
@@ -1697,9 +1759,17 @@
       }
     }
 
+    function syncNameLockBtn(btn, locked) {
+      btn.innerHTML = locked ? iconSvg("lock") : iconSvg("unlock");
+      btn.title = locked ? "Name locked – click to auto-update" : "Name auto-updates with color";
+      btn.setAttribute("aria-label", btn.title);
+      btn.style.opacity = locked ? "1" : "0.45";
+    }
+
     function setEditingName(name) {
       if (editingIndex === null || !colors[editingIndex]) return;
       colors[editingIndex].name = name.trim();
+      colors[editingIndex].nameLocked = name.trim().length > 0;
       renderPalette();
       syncEditorChrome();
     }
@@ -1860,19 +1930,40 @@
       editorCloseBtn.innerHTML = iconSvg("x");
       editorFields.innerHTML = "";
 
+      const nameRow = document.createElement("div");
+      nameRow.className = "editor-name-row";
+
       const nameInput = document.createElement("input");
       nameInput.className = "editor-name";
-      nameInput.value = color.name || "";
+      nameInput.value = formatCssName(color.name || "");
       nameInput.placeholder = `Color ${editingIndex + 1}`;
       nameInput.setAttribute("aria-label", "Color name");
       nameInput.addEventListener("change", () => {
         setEditingName(nameInput.value);
-        nameInput.value = colors[editingIndex]?.name || "";
+        nameInput.value = formatCssName(colors[editingIndex]?.name || "");
+        syncNameLockBtn(nameLockBtn, colors[editingIndex]?.nameLocked || false);
       });
       nameInput.addEventListener("keydown", (event) => {
         if (event.key === "Enter") nameInput.blur();
       });
-      editorFields.append(nameInput);
+
+      const nameLockBtn = document.createElement("button");
+      nameLockBtn.className = "button icon name-lock-btn";
+      nameLockBtn.type = "button";
+      syncNameLockBtn(nameLockBtn, color.nameLocked || false);
+      nameLockBtn.addEventListener("click", () => {
+        const locked = !colors[editingIndex].nameLocked;
+        colors[editingIndex].nameLocked = locked;
+        if (!locked) {
+          colors[editingIndex].name = closestCssName(colors[editingIndex].hex);
+          nameInput.value = colors[editingIndex].name;
+          renderPalette();
+        }
+        syncNameLockBtn(nameLockBtn, locked);
+      });
+
+      nameRow.append(nameInput, nameLockBtn);
+      editorFields.append(nameRow);
 
       const config = fieldConfig(editorMode.value, hex);
       const editorValues = { ...config.values };
@@ -2011,15 +2102,17 @@
     function closeAdjustments({ restore = false } = {}) {
       if (restore && isAdjusting) {
         colors = copyPaletteEntries(adjustmentBaseColors);
-        renderPalette();
       }
       adjustmentModal.hidden = true;
       adjustmentBaseColors = [];
       isAdjusting = false;
+      renderPalette();
     }
 
     function applyAdjustments() {
       closeAdjustments();
+      colors = colors.map((color) => ({ ...color, name: closestCssName(color.hex) }));
+      renderPalette();
       showToast("Palette adjustments applied.");
     }
 
@@ -2072,73 +2165,6 @@
       paletteEl.style.setProperty("--count", colors.length);
     }
 
-    const harmonySchemes = [
-      {
-        id: "analogous",
-        name: "Analogous",
-        offsets: [-34, -18, 0, 18, 34, 48],
-        saturation: 0,
-        lightness: [0, 12, -12, 22, -22, 5]
-      },
-      {
-        id: "complementary",
-        name: "Complementary",
-        offsets: [0, 180, -14, 166, 14, 194],
-        saturation: 4,
-        lightness: [0, 4, 18, -14, 26, -24]
-      },
-      {
-        id: "split-complementary",
-        name: "Split Complementary",
-        offsets: [0, 150, 210, -10, 160, 200],
-        saturation: 2,
-        lightness: [0, 10, -10, 22, -18, 6]
-      },
-      {
-        id: "triadic",
-        name: "Triadic",
-        offsets: [0, 120, 240, 14, 134, 254],
-        saturation: -2,
-        lightness: [0, 8, -8, 20, -18, 4]
-      },
-      {
-        id: "tetradic",
-        name: "Tetradic",
-        offsets: [0, 60, 180, 240, 15, 195],
-        saturation: -4,
-        lightness: [0, 14, -10, 6, 24, -22]
-      },
-      {
-        id: "monochrome",
-        name: "Monochrome",
-        offsets: [0, 0, 0, 0, 0, 0],
-        saturation: -8,
-        lightness: [-24, -10, 0, 14, 28, 38]
-      }
-    ];
-
-    function selectedHarmonyScheme() {
-      if (harmonySelect.value === "random") return pickRandom(harmonySchemes);
-      return harmonySchemes.find((scheme) => scheme.id === harmonySelect.value) || harmonySchemes[0];
-    }
-
-    function paletteAnchor() {
-      const lockedColor = colors.find((color) => color.locked);
-      if (lockedColor) {
-        const lockedHsl = rgbToHsl(hexToRgb(lockedColor.hex));
-        return {
-          h: lockedHsl.h,
-          s: clamp(lockedHsl.s || 58, 38, 84),
-          l: clamp(lockedHsl.l || 52, 32, 68)
-        };
-      }
-
-      return {
-        h: Math.round(randomBetween(0, 360)),
-        s: Math.round(randomBetween(48, 78)),
-        l: Math.round(randomBetween(40, 62))
-      };
-    }
 
     function makeUniqueHex(hsl, usedHexes) {
       let nextHsl = { ...hsl };
@@ -2158,64 +2184,64 @@
     }
 
     // ─── Smart palette generator ───────────────────────────────────────────
-    // Builds a palette following key design principles:
-    //   • One deep neutral anchor (dark or light)
-    //   • One or two muted supporting tones (same temperature)
-    //   • One vivid accent on a harmonically related hue
-    //   • Spread across lightness values so no two slots feel the same weight
-    //   • Warm vs cool temperature bias randomised per generation
+    // Principles applied:
+    //   • Dark anchor + light anchor for value contrast
+    //   • Middle slots get gentle analogous hue drifts so the ramp has colour
+    //   • One vivid accent on a split-complementary hue (120–210° away)
+    //   • Warm/cool temperature bias shifts neutrals subtly each generation
+    //   • Scales cleanly to any palette size
     function generateSmartCuratedHexes() {
-      // Decide temperature bias for this generation
       const warmBias = Math.random() > 0.5;
 
-      // Pick a base hue (biased toward visually interesting ranges)
-      const hueRanges = [[0, 40], [180, 260], [270, 340]];
+      // Base hue — biased toward perceptually rich ranges
+      const hueRanges = [[0, 40], [170, 260], [265, 345]];
       const [hMin, hMax] = pickRandom(hueRanges);
       const baseHue = Math.round(randomBetween(hMin, hMax));
 
-      // Accent hue: split-complementary offset (120°–150° away)
+      // Accent on a split-complementary offset
       const accentOffset = pickRandom([120, 135, 150, 210, 225]);
       const accentHue = wrapHue(baseHue + accentOffset);
 
-      // Temperature nudge on saturation and hue
-      const tempHueNudge = warmBias ? randomBetween(-8, 4) : randomBetween(-4, 8);
-      const tempSatNudge = warmBias ? randomBetween(4, 12) : randomBetween(-8, 0);
-
-      // Palette slots: [role, hue, sat, lightness]
-      // Roles: dark neutral, mid neutral, light neutral, muted support, vivid accent
-      const darkL  = Math.round(randomBetween(12, 22));
-      const midL   = Math.round(randomBetween(34, 46));
-      const lightL = Math.round(randomBetween(82, 94));
-      const supportL = Math.round(randomBetween(54, 68));
-      const accentL  = Math.round(randomBetween(44, 60));
-
-      // Neutral saturation: low but not zero — gives warmth/coolness character
-      const neutralSat = Math.round(randomBetween(6, 18) + tempSatNudge);
-      // Support saturation: muted — 25–45%
-      const supportSat = Math.round(randomBetween(24, 44) + tempSatNudge);
-      // Accent saturation: vivid — 70–92%
-      const accentSat  = Math.round(randomBetween(70, 92));
+      // Temperature nudges
+      const tempHueNudge = warmBias ? randomBetween(-10, 4) : randomBetween(-4, 10);
+      const tempSatNudge = warmBias ? randomBetween(4, 14) : randomBetween(-10, 0);
 
       const neutralHue = wrapHue(baseHue + tempHueNudge);
 
-      // Build as many slots as there are colors, evenly spread across lightness.
-      // Always include one vivid accent (last slot) and keep the rest as
-      // neutrals/supports spread from dark to light with no two too close.
-      const count = colors.length;
+      // Lightness poles
+      const darkL  = Math.round(randomBetween(10, 22));
+      const lightL = Math.round(randomBetween(80, 94));
+      const accentL = Math.round(randomBetween(42, 60));
 
-      // Spread lightness values evenly from darkL to lightL across (count-1) neutrals
-      const neutralCount = count - 1; // reserve one slot for the accent
+      // Saturation levels
+      const neutralSat = clamp(Math.round(randomBetween(5, 16) + tempSatNudge), 0, 100);
+      const accentSat  = Math.round(randomBetween(68, 92));
+
+      const count = colors.length;
+      const neutralCount = count - 1; // last slot = accent
       const slots = [];
 
       for (let i = 0; i < neutralCount; i++) {
         const t = neutralCount === 1 ? 0.5 : i / (neutralCount - 1);
         const l = Math.round(darkL + t * (lightL - darkL));
-        // Alternate between very low sat (neutral) and moderate sat (support)
-        const isMid = t > 0.2 && t < 0.8;
-        const s = isMid
-          ? clamp(Math.round(randomBetween(22, 44) + tempSatNudge), 0, 100)
-          : clamp(neutralSat, 0, 100);
-        slots.push({ h: neutralHue, s, l });
+
+        const isMid = t > 0.15 && t < 0.85;
+        let h, s;
+        if (isMid) {
+          // Drift the hue analogously as we move along the ramp,
+          // alternating direction per slot for visual variety.
+          const driftDir = (i % 2 === 0) ? 1 : -1;
+          const driftAmount = randomBetween(18, 42) * driftDir;
+          h = wrapHue(neutralHue + driftAmount);
+          // Mid slots get moderate saturation so they read as coloured, not grey
+          s = clamp(Math.round(randomBetween(28, 52) + tempSatNudge), 0, 100);
+        } else {
+          // Dark and light poles stay close to the base hue and low-sat
+          h = wrapHue(neutralHue + randomBetween(-6, 6));
+          s = neutralSat;
+        }
+
+        slots.push({ h, s, l });
       }
 
       // Vivid accent always last
@@ -2227,7 +2253,7 @@
         if (color.locked) return color.hex;
         const slot = slots[Math.min(index, slots.length - 1)];
         const jittered = {
-          h: wrapHue(slot.h + randomBetween(-4, 4)),
+          h: wrapHue(slot.h + randomBetween(-5, 5)),
           s: clamp(slot.s + randomBetween(-4, 4), 0, 100),
           l: clamp(slot.l + randomBetween(-3, 3), 4, 96)
         };
@@ -2237,26 +2263,7 @@
     // ───────────────────────────────────────────────────────────────────────
 
     function generateSmartPaletteHexes() {
-      if (harmonySelect.value === "smart") return generateSmartCuratedHexes();
-      const scheme = selectedHarmonyScheme();
-      const anchor = paletteAnchor();
-      const usedHexes = new Set(colors.filter((color) => color.locked).map((color) => color.hex));
-      let unlockedIndex = 0;
-
-      return colors.map((color, index) => {
-        if (color.locked) return color.hex;
-
-        const offset = scheme.offsets[unlockedIndex % scheme.offsets.length];
-        const lightnessShift = scheme.lightness[(index + unlockedIndex) % scheme.lightness.length];
-        const nextHsl = {
-          h: wrapHue(anchor.h + offset + randomBetween(-5, 5)),
-          s: Math.round(shiftedValue(anchor.s + scheme.saturation, 8, 32, 88)),
-          l: Math.round(shiftedValue(anchor.l + lightnessShift, 5, 18, 84))
-        };
-
-        unlockedIndex += 1;
-        return makeUniqueHex(nextHsl, usedHexes);
-      });
+      return generateSmartCuratedHexes();
     }
 
     function nextRelatedColorHex() {
@@ -2300,8 +2307,174 @@
       if (editingIndex !== null) updateEditor();
     }
 
+    // ─── Named color lookup ────────────────────────────────────────────────
+    // Each entry: [displayName, r, g, b]
+    // ~600 entries for precise perceptual matching via Lab Delta-E.
+    const CSS_NAMED_COLORS = [
+      // ── Whites & near-whites
+      ["White",255,255,255],["Snow",255,250,250],["Ivory",255,255,240],
+      ["Floral White",255,250,240],["Ghost White",248,248,255],["Seashell",255,245,238],
+      ["Linen",250,240,230],["Old Lace",253,245,230],["Antique White",250,235,215],
+      ["Cornsilk",255,248,220],["Blanched Almond",255,235,205],["Bisque",255,228,196],
+      ["Papaya Whip",255,239,213],["Moccasin",255,228,181],["Navajo White",255,222,173],
+      ["Peach Puff",255,218,185],["Alice Blue",240,248,255],["Lavender Blush",255,240,245],
+      ["Mint Cream",245,255,250],["Azure",240,255,255],["Honeydew",240,255,240],
+      ["Misty Rose",255,228,225],
+      // ── Grays & blacks
+      ["White Smoke",245,245,245],["Gainsboro",220,220,220],["Light Gray",211,211,211],
+      ["Silver",192,192,192],["Dark Gray",169,169,169],["Gray",128,128,128],
+      ["Dim Gray",105,105,105],["Slate Gray",112,128,144],["Light Slate Gray",119,136,153],
+      ["Dark Slate Gray",47,79,79],["Charcoal",54,69,79],["Jet",52,52,52],
+      ["Onyx",53,56,57],["Eerie Black",27,27,27],["Rich Black",0,5,14],
+      ["Black",0,0,0],["Off Black",15,15,20],["Raisin Black",36,33,36],
+      ["Dark Charcoal",48,48,48],["Outer Space",65,74,76],["Gunmetal",42,52,57],
+      ["Davy Gray",85,85,85],["Nickel",114,116,114],["Battleship Gray",132,132,130],
+      ["Ash Gray",178,190,181],["Platinum",229,228,226],["Timberwolf",219,215,210],
+      // ── Reds
+      ["Red",255,0,0],["Crimson",220,20,60],["Firebrick",178,34,34],
+      ["Dark Red",139,0,0],["Maroon",128,0,0],["Blood Red",102,0,0],
+      ["Scarlet",255,36,0],["Vermilion",227,66,52],["Tomato",255,99,71],
+      ["Coral",255,127,80],["Indian Red",205,92,92],["Rosy Brown",188,143,143],
+      ["Salmon",250,128,114],["Light Salmon",255,160,122],["Dark Salmon",233,150,122],
+      ["Light Coral",240,128,128],["Brick Red",178,34,34],["Carmine",150,0,24],
+      ["Raspberry",227,11,92],["Cherry",222,49,99],["Burgundy",128,0,32],
+      ["Wine",114,47,55],["Venetian Red",200,8,21],["Rufous",168,28,7],
+      ["Terra Cotta",226,114,91],["Tuscan Red",120,60,55],["Cardinal",196,30,58],
+      ["Alizarin",227,38,54],["Cadmium Red",227,0,34],["Lava",207,16,32],
+      // ── Oranges
+      ["Orange",255,165,0],["Dark Orange",255,140,0],["Orange Red",255,69,0],
+      ["Tangerine",242,133,0],["Amber",255,191,0],["Apricot",251,206,177],
+      ["Peach",255,218,185],["Melon",253,188,180],["Burnt Orange",204,85,0],
+      ["Pumpkin",255,117,24],["Persimmon",236,88,0],["Ochre",204,119,34],
+      ["Rust",183,65,14],["Sienna",160,82,45],["Chocolate",210,105,30],
+      ["Burnt Sienna",233,116,81],["Copper",184,115,51],["Bronze",205,127,50],
+      ["Sandy Brown",244,164,96],["Peru",205,133,63],["Goldenrod",218,165,32],
+      ["Dark Goldenrod",184,134,11],["Saffron",244,196,48],["Marigold",234,162,33],
+      // ── Yellows
+      ["Yellow",255,255,0],["Light Yellow",255,255,224],["Lemon Chiffon",255,250,205],
+      ["Lemon Yellow",255,244,79],["Canary",255,255,153],["Banana",255,240,150],
+      ["Cream",255,253,208],["Champagne",247,231,206],["Wheat",245,222,179],
+      ["Khaki",240,230,140],["Dark Khaki",189,183,107],["Palegoldenrod",238,232,170],
+      ["Gold",255,215,0],["Butter",255,240,165],["Aureolin",253,238,0],
+      ["Flax",238,220,130],["Straw",228,217,111],["Ecru",194,178,128],
+      ["Sand",194,178,128],["Tan",210,180,140],["Burlywood",222,184,135],
+      // ── Yellow-greens & limes
+      ["Yellow Green",154,205,50],["Green Yellow",173,255,47],["Chartreuse",127,255,0],
+      ["Lawn Green",124,252,0],["Lime",0,255,0],["Lime Green",50,205,50],
+      ["Spring Green",0,255,127],["Light Green",144,238,144],["Pale Green",152,251,152],
+      ["Pistachio",147,197,114],["Apple Green",141,182,0],["Citron",158,169,31],
+      ["Olive Drab",107,142,35],["Olive",128,128,0],["Dark Olive Green",85,107,47],
+      ["Moss Green",138,154,91],["Fern Green",79,121,66],["Artichoke",143,151,121],
+      ["Sage",188,184,138],["Pear",209,226,49],
+      // ── Greens
+      ["Green",0,128,0],["Dark Green",0,100,0],["Forest Green",34,139,34],
+      ["Medium Sea Green",60,179,113],["Sea Green",46,139,87],["Dark Sea Green",143,188,143],
+      ["Medium Spring Green",0,250,154],["Emerald",80,200,120],["Jade",0,168,107],
+      ["Jungle Green",41,171,135],["Shamrock",69,189,110],["Hunter Green",53,94,59],
+      ["British Racing Green",0,66,37],["Hooker Green",73,121,107],["Laurel Green",169,186,157],
+      ["Celadon",172,225,175],["Mint Green",152,255,152],["Medium Aquamarine",102,205,170],
+      ["Viridian",64,130,109],["Bottle Green",0,106,78],["Lincoln Green",25,89,5],
+      ["Sap Green",80,125,42],["Asparagus",135,169,107],["Ferngreen",79,121,66],
+      ["Pine Green",1,121,111],["Dark Forest Green",0,68,27],["Malachite",11,218,81],
+      ["Chlorophyll Green",75,139,59],["Rifle Green",68,76,56],["Army Green",75,83,32],
+      ["Dark Moss Green",46,56,32],["Kombu Green",54,70,46],["Dark Jungle Green",26,36,33],
+      ["Phthalo Green",18,53,36],["Cal Poly Green",30,77,43],["Sacramento Green",4,57,39],
+      ["Racing Green",12,57,28],["Midnight Green",0,73,83],
+      // ── Dark muted greens (forest / woodland)
+      ["Dark Olive",54,72,42],["Woodland",73,93,55],["Shadow Green",119,143,119],
+      ["Reseda Green",108,124,89],["Myrtle Green",49,120,115],["Fennel Green",35,68,35],
+      ["Swamp Green",55,72,42],["Camouflage Green",54,74,37],["Fern",113,188,120],
+      // ── Teals & cyans
+      ["Teal",0,128,128],["Dark Cyan",0,139,139],["Cyan",0,255,255],
+      ["Aqua",0,255,255],["Aquamarine",127,255,212],["Medium Turquoise",72,209,204],
+      ["Turquoise",64,224,208],["Pale Turquoise",175,238,238],["Light Cyan",224,255,255],
+      ["Dark Turquoise",0,206,209],["Cadet Blue",95,158,160],["Light Sea Green",32,178,170],
+      ["Dark Teal",0,96,100],["Deep Teal",0,64,64],["Steel Teal",95,138,139],
+      ["Verdigris",67,179,174],["Robin Egg Blue",0,204,204],["Cerulean",0,179,230],
+      ["Tiffany Blue",10,186,181],["Bondi Blue",0,149,182],["Peacock Blue",0,136,148],
+      ["Cyan Azure",78,130,180],["Air Force Blue",93,138,168],["Prussian Blue",0,49,83],
+      // ── Blues
+      ["Blue",0,0,255],["Medium Blue",0,0,205],["Dark Blue",0,0,139],
+      ["Navy",0,0,128],["Midnight Blue",25,25,112],["Royal Blue",65,105,225],
+      ["Cobalt Blue",0,71,171],["Sapphire",15,82,186],["Cornflower Blue",100,149,237],
+      ["Steel Blue",70,130,180],["Dodger Blue",30,144,255],["Deep Sky Blue",0,191,255],
+      ["Sky Blue",135,206,235],["Light Sky Blue",135,206,250],["Light Blue",173,216,230],
+      ["Light Steel Blue",176,196,222],["Powder Blue",176,224,230],["Periwinkle",204,204,255],
+      ["Slate Blue",106,90,205],["Medium Slate Blue",123,104,238],["Dark Slate Blue",72,61,139],
+      ["Indigo",75,0,130],["Ultramarine",18,10,143],["Denim",21,96,189],
+      ["Klein Blue",0,47,167],["Egyptian Blue",16,52,166],["Duke Blue",0,0,156],
+      ["Electric Blue",125,249,255],["Baby Blue",137,207,240],["Ice Blue",153,204,255],
+      ["Glaucous",96,130,182],["Lapis Lazuli",38,97,156],["Yale Blue",15,77,146],
+      ["Space Cadet",29,41,81],["Dark Navy",13,13,77],["Maastricht Blue",9,17,40],
+      ["Oxford Blue",0,33,71],["Phthalo Blue",0,15,137],
+      // ── Purples & violets
+      ["Purple",128,0,128],["Dark Magenta",139,0,139],["Magenta",255,0,255],
+      ["Fuchsia",255,0,255],["Violet",238,130,238],["Orchid",218,112,214],
+      ["Medium Orchid",186,85,211],["Dark Orchid",153,50,204],["Dark Violet",148,0,211],
+      ["Blue Violet",138,43,226],["Medium Purple",147,112,219],["Amethyst",153,102,204],
+      ["Rebecca Purple",102,51,153],["Mauve",224,176,255],["Wisteria",201,160,220],
+      ["Lavender",230,230,250],["Thistle",216,191,216],["Plum",221,160,221],
+      ["Lilac",200,162,200],["Heliotrope",223,115,255],["Purple Taupe",80,60,80],
+      ["Byzantium",112,41,99],["Tyrian Purple",102,2,60],["Royal Purple",120,81,169],
+      ["Grape",111,45,168],["Mardi Gras",136,0,133],["Palatinate Purple",104,40,96],
+      ["Russian Violet",50,23,77],["Dark Purple",48,25,52],["Imperial Purple",102,2,60],
+      // ── Pinks & roses
+      ["Pink",255,192,203],["Light Pink",255,182,193],["Hot Pink",255,105,180],
+      ["Deep Pink",255,20,147],["Medium Violet Red",199,21,133],["Pale Violet Red",219,112,147],
+      ["Rose",255,0,127],["Cerise",222,49,99],["Amaranth",229,43,80],
+      ["Carnation",255,166,201],["Flamingo",252,142,172],["Blush",222,93,131],
+      ["Pastel Pink",255,209,220],["Baby Pink",255,228,225],["Dusty Rose",201,142,147],
+      ["Puce",204,136,153],["Candy Pink",228,113,122],["Punch",222,91,102],
+      ["Watermelon",252,108,133],["Tickle Me Pink",252,137,172],["Pale Rose",255,228,225],
+      // ── Browns & earthy
+      ["Brown",165,42,42],["Saddle Brown",139,69,19],["Saddlebrown",139,69,19],
+      ["Dark Brown",101,67,33],["Medium Brown",128,70,27],["Light Brown",181,101,29],
+      ["Sepia",112,66,20],["Mahogany",192,64,0],["Chestnut",149,69,53],
+      ["Auburn",165,42,42],["Umber",99,81,71],["Raw Umber",130,102,68],
+      ["Burnt Umber",138,51,36],["Walnut",120,80,55],["Mocha",150,100,64],
+      ["Coffee",111,78,55],["Espresso",61,30,18],["Dark Mahogany",78,26,3],
+      ["Chocolate Brown",101,46,25],["Cocoa",210,105,30],["Caramel",196,120,48],
+      ["Tawny",205,87,0],["Liver",103,76,71],["Bole",121,68,59],
+      ["Taupe",72,60,50],["Dark Taupe",72,60,50],["Warm Taupe",138,120,100],
+      ["Khaki Brown",195,160,100],["Driftwood",175,135,95],["Bark",143,99,58],
+      // ── Beiges & creams
+      ["Beige",245,245,220],["Cream",255,253,208],["Off White",255,250,240],
+      ["Bone",227,218,201],["Eggshell",240,234,214],["Pearl",234,224,200],
+      ["Lace",255,240,220],["Buff",240,220,130],["Alabaster",240,234,214],
+      ["Vanilla",243,229,171],["Parchment",240,230,196],["Vellum",243,237,202],
+      // ── Specific named palette colors (design / brand classics)
+      ["Midnight",112,20,100],["Chartreuse Yellow",223,255,0],["Electric Lime",204,255,0],
+      ["Neon Green",57,255,20],["Neon Yellow",255,255,51],["Neon Orange",255,95,31],
+      ["Neon Pink",255,16,240],["Neon Blue",77,77,255],["Neon Purple",188,19,254],
+      ["Fluorescent Green",0,255,0],["Hot Orange",255,127,0],["Electric Yellow",255,255,0],
+      ["Pastel Blue",174,198,207],["Pastel Green",119,221,119],["Pastel Yellow",253,253,150],
+      ["Pastel Orange",255,179,71],["Pastel Purple",179,158,181],["Pastel Red",255,105,97],
+      ["Muted Teal",95,150,145],["Muted Blue",100,130,155],["Muted Green",110,140,110],
+      ["Muted Red",175,90,90],["Muted Purple",130,100,130],["Muted Orange",190,130,80],
+      ["Dusty Blue",135,160,180],["Dusty Green",110,140,120],["Dusty Purple",140,120,150],
+      ["Dusty Orange",180,120,80],["Dusty Teal",100,140,140],
+    ];
+
+    function closestCssName(hex) {
+      const { r, g, b } = hexToRgb(hex);
+      const lab = rgbToLab({ r, g, b });
+      let bestName = "Unknown";
+      let bestDist = Infinity;
+      for (const [name, nr, ng, nb] of CSS_NAMED_COLORS) {
+        const nlab = rgbToLab({ r: nr, g: ng, b: nb });
+        const dl = lab.l - nlab.l;
+        const da = lab.a - nlab.a;
+        const db = lab.b - nlab.b;
+        const dist = dl * dl + da * da + db * db;
+        if (dist < bestDist) { bestDist = dist; bestName = name; }
+      }
+      return bestName;
+    }
+    // ───────────────────────────────────────────────────────────────────────
+
     function renderPalette() {
       paletteEl.innerHTML = "";
+      const showSplit = activeFilter !== "none" || isAdjusting;
       colors.forEach((color, index) => {
         const swatch = document.createElement("article");
         const displayHex = previewHex(color.hex);
@@ -2311,6 +2484,29 @@
         swatch.draggable = true;
         swatch.style.setProperty("--swatch-color", displayHex);
         swatch.style.setProperty("--label-color", labelColor);
+
+        if (showSplit) {
+          const originalHex = isAdjusting
+            ? (adjustmentBaseColors[index]?.hex ?? color.hex)
+            : color.hex;
+          const originalLabel = getContrastColor(originalHex);
+          const strip = document.createElement("div");
+          strip.className = "swatch-original-strip";
+          strip.style.setProperty("--original-color", originalHex);
+          strip.style.setProperty("--original-label", originalLabel);
+          swatch.append(strip);
+
+          const divider = document.createElement("div");
+          divider.className = "swatch-divider";
+          swatch.append(divider);
+
+          if (index === 0) {
+            const afterLabel = document.createElement("div");
+            afterLabel.className = "swatch-after-label";
+            afterLabel.textContent = "after";
+            swatch.append(afterLabel);
+          }
+        }
 
         swatch.addEventListener("click", (event) => {
           if (event.target.closest("button, input")) return;
@@ -2322,7 +2518,7 @@
         });
 
         swatch.addEventListener("dragstart", (event) => {
-          if (event.target.closest("button, input")) {
+          if (event.target.closest("button, input, .color-info")) {
             event.preventDefault();
             return;
           }
@@ -2404,13 +2600,6 @@
         const info = document.createElement("div");
         info.className = "color-info";
 
-        if (color.name?.trim()) {
-          const name = document.createElement("div");
-          name.className = "swatch-name";
-          name.textContent = color.name.trim();
-          info.append(name);
-        }
-
         const hexButton = document.createElement("button");
         hexButton.className = "hex-field";
         hexButton.type = "button";
@@ -2425,7 +2614,16 @@
         rgbValue.className = "rgb-value";
         rgbValue.textContent = rgbText(color.hex);
 
-        info.append(hexButton, rgbValue);
+        info.append(hexButton);
+
+        if (color.name?.trim()) {
+          const name = document.createElement("div");
+          name.className = "swatch-name";
+          name.textContent = formatCssName(color.name.trim());
+          info.append(name);
+        }
+
+        info.append(rgbValue);
         swatch.append(actions, info);
         paletteEl.append(swatch);
       });
@@ -2453,7 +2651,7 @@
         strip.style.setProperty("--saved-count", savedColors.length);
         savedColors.forEach(({ hex }) => {
           const color = document.createElement("div");
-          color.style.background = previewHex(hex);
+          color.style.background = hex;
           strip.append(color);
         });
 
@@ -2483,7 +2681,7 @@
 
         const hexes = document.createElement("p");
         hexes.className = "saved-hexes";
-        hexes.textContent = savedColors.map((color) => color.name ? `${color.name}: ${color.hex}` : color.hex).join("  ");
+        hexes.textContent = savedColors.map((color) => color.hex).join("  ");
 
         const actions = document.createElement("div");
         actions.className = "saved-actions";
@@ -2521,7 +2719,7 @@
     function generatePalette() {
       if (isAdjusting) closeAdjustments();
       const nextHexes = generateSmartPaletteHexes();
-      colors = colors.map((color, index) => color.locked ? color : { ...color, hex: nextHexes[index], name: "" });
+      colors = colors.map((color, index) => color.locked ? color : { ...color, hex: nextHexes[index], name: closestCssName(nextHexes[index]) });
       renderPalette();
       if (editingIndex !== null) updateEditor();
     }
@@ -2529,7 +2727,8 @@
     function addColor() {
       if (isAdjusting) closeAdjustments();
       if (colors.length >= maxColors) return;
-      colors.push({ hex: nextRelatedColorHex(), name: "", locked: false });
+      const hex = nextRelatedColorHex();
+      colors.push({ hex, name: closestCssName(hex), locked: false });
       renderPalette();
     }
 
@@ -2693,7 +2892,6 @@
     saveBtn.addEventListener("click", savePalette);
     shareBtn.addEventListener("click", sharePalette);
     exportBtn.addEventListener("click", exportImage);
-    harmonySelect.addEventListener("change", persistPreviewControls);
     themeBtn.addEventListener("click", toggleTheme);
     adjustCancelTopBtn.addEventListener("click", () => closeAdjustments({ restore: true }));
     adjustCancelBtn.addEventListener("click", () => closeAdjustments({ restore: true }));
@@ -2757,11 +2955,9 @@
     loadSavedPalettes();
     loadTheme();
     loadGeneratorControls();
-    colors = Array.from({ length: 5 }, () => ({ hex: "", name: "", locked: false }));
-    colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: "", locked: false }));
     if (!loadPaletteFromUrl()) {
-      colors = Array.from({ length: 5 }, () => ({ hex: "", name: "", locked: false }));
-      colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: "", locked: false }));
+      colors = new Array(5).fill(null).map(() => ({ hex: "#000000", name: "", locked: false }));
+      colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: closestCssName(hex), locked: false }));
     }
     renderPalette();
     renderSavedPalettes();
