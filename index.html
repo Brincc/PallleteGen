@@ -334,6 +334,16 @@
       transition: background-color 180ms ease, box-shadow 160ms ease, filter 160ms ease, transform 160ms ease;
     }
 
+    .swatch-drag-zone {
+      flex: 1;
+      min-height: 0;
+      cursor: grab;
+    }
+
+    .swatch-drag-zone:active {
+      cursor: grabbing;
+    }
+
     .swatch-original-strip {
       position: absolute;
       top: 0;
@@ -2330,6 +2340,23 @@
       ["Dark Charcoal",48,48,48],["Outer Space",65,74,76],["Gunmetal",42,52,57],
       ["Davy Gray",85,85,85],["Nickel",114,116,114],["Battleship Gray",132,132,130],
       ["Ash Gray",178,190,181],["Platinum",229,228,226],["Timberwolf",219,215,210],
+      // ── Dark cool / blue-blacks
+      ["Dark Navy",10,12,30],["Midnight Navy",15,20,45],["Deep Navy",10,20,55],
+      ["Blue Black",10,10,40],["Dark Indigo",20,10,60],["Dark Sapphire",12,30,70],
+      ["Navy Black",10,15,35],["Ink Blue",15,25,50],["Dark Cobalt",18,28,65],
+      ["Deep Space",12,14,32],["Void Blue",8,10,35],["Abyss Blue",6,12,42],
+      ["Dark Steel",28,35,45],["Blue Charcoal",30,38,50],["Slate Black",22,28,38],
+      ["Steel Black",30,32,38],["Cool Black",20,22,30],["Blue Gray Black",25,30,42],
+      // ── Dark warm / neutral darks
+      ["Dark Brown Black",22,15,12],["Espresso Black",18,12,10],["Warm Black",20,18,14],
+      ["Dark Walnut",28,20,16],["Sable",40,30,25],["Seal Brown",50,36,28],
+      ["Dark Mahogany",30,14,8],["Licorice",26,17,17],["Van Dyke Brown",40,26,13],
+      // ── Dark purples / mauves
+      ["Dark Purple Black",20,10,25],["Deep Plum",30,15,35],["Midnight Purple",25,12,40],
+      ["Dark Byzantium",40,20,45],["Dark Violet Black",18,8,30],
+      // ── Dark greens
+      ["Dark Forest",12,22,15],["Dark Pine",10,25,18],["Hunter Black",18,28,20],
+      ["Deep Moss",20,30,22],["Bottle Black",8,20,16],
       // ── Reds
       ["Red",255,0,0],["Crimson",220,20,60],["Firebrick",178,34,34],
       ["Dark Red",139,0,0],["Maroon",128,0,0],["Blood Red",102,0,0],
@@ -2481,7 +2508,6 @@
         const labelColor = getContrastColor(displayHex);
         swatch.className = `swatch${isLight(displayHex) ? " dark-ui" : ""}`;
         swatch.dataset.colorIndex = String(index);
-        swatch.draggable = true;
         swatch.style.setProperty("--swatch-color", displayHex);
         swatch.style.setProperty("--label-color", labelColor);
 
@@ -2514,14 +2540,14 @@
             didDragColor = false;
             return;
           }
+          if (window.getSelection().toString().length > 0) return;
           openEditor(index, swatch);
         });
 
-        swatch.addEventListener("dragstart", (event) => {
-          if (event.target.closest("button, input, .color-info")) {
-            event.preventDefault();
-            return;
-          }
+        const dragZone = document.createElement("div");
+        dragZone.className = "swatch-drag-zone";
+        dragZone.draggable = true;
+        dragZone.addEventListener("dragstart", (event) => {
           draggedColorIndex = index;
           didDragColor = true;
           swatch.classList.add("dragging");
@@ -2530,6 +2556,11 @@
           const preview = createDragPreview(color, index);
           event.dataTransfer.setDragImage(preview, 61, 34);
           requestAnimationFrame(() => preview.remove());
+        });
+        dragZone.addEventListener("dragend", () => {
+          draggedColorIndex = null;
+          swatch.classList.remove("dragging", "drag-over");
+          setTimeout(() => { didDragColor = false; }, 0);
         });
 
         swatch.addEventListener("dragover", (event) => {
@@ -2551,13 +2582,7 @@
           moveColor(fromIndex, index);
         });
 
-        swatch.addEventListener("dragend", () => {
-          draggedColorIndex = null;
-          swatch.classList.remove("dragging", "drag-over");
-          setTimeout(() => {
-            didDragColor = false;
-          }, 0);
-        });
+
 
         const actions = document.createElement("div");
         actions.className = "swatch-actions";
@@ -2624,7 +2649,7 @@
         }
 
         info.append(rgbValue);
-        swatch.append(actions, info);
+        swatch.append(actions, dragZone, info);
         paletteEl.append(swatch);
       });
       updateControls();
@@ -2777,6 +2802,20 @@
       }
     }
 
+    function autoNamePalette(paletteColors) {
+      // Score by visual dominance: saturation weighted by mid-tone proximity
+      // Vivid mid-tones rank highest; near-black/white extremes rank lowest
+      const scored = paletteColors.map((color) => {
+        const { s, l } = rgbToHsl(hexToRgb(color.hex));
+        const score = (s / 100) * (1 - Math.abs((l / 100) - 0.5) * 2);
+        return { color, score };
+      });
+      scored.sort((a, b) => b.score - a.score);
+      const first = scored[0].color.name || closestCssName(scored[0].color.hex);
+      const second = scored[1]?.color.name || closestCssName(scored[1]?.color.hex);
+      return `${first} ${second}`;
+    }
+
     function savePalette() {
       const paletteColors = getPaletteColors();
       const hexes = paletteColors.map((color) => color.hex);
@@ -2789,7 +2828,7 @@
       const id = Date.now();
       savedPalettes.unshift({
         id,
-        name: `Palette ${savedPalettes.length + 1}`,
+        name: autoNamePalette(paletteColors),
         hexes,
         colors: paletteColors
       });
