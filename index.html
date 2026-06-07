@@ -405,7 +405,7 @@
       z-index: 1;
     }
 
-    .swatch > *:not(.swatch-original-strip):not(.swatch-divider):not(.swatch-after-label) {
+    .swatch > *:not(.swatch-original-strip):not(.swatch-divider):not(.swatch-after-label):not(.swatch-actions) {
       position: relative;
       z-index: 2;
     }
@@ -474,56 +474,77 @@
 
     .swatch-actions {
       display: flex;
-      flex-wrap: nowrap;
-      justify-content: space-between;
-      gap: 6px;
+      position: absolute;
+      bottom: calc(var(--info-height, 64px) - 12px);
+      left: 50%;
+      transform: translateX(-50%);
+      flex-direction: column-reverse;
+      align-items: center;
+      gap: 4px;
+      opacity: 0;
+      transition: opacity 140ms ease;
+      z-index: 3;
+      pointer-events: none;
+    }
+
+    .swatch:hover .swatch-actions,
+    .swatch-actions:hover {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* When locked: always show the action panel so lock btn stays visible */
+    .swatch.has-locked .swatch-actions {
+      opacity: 1;
+      pointer-events: auto;
+    }
+
+    /* When locked and not hovered: hide everything except the lock button */
+    .swatch.has-locked:not(:hover) .swatch-actions .button.icon:not(.lock-btn-locked) {
+      opacity: 0;
+      pointer-events: none;
+    }
+
+    .lock-btn-alone {
+      display: none;
+    }
+
+    .swatch-actions .button.icon {
+      pointer-events: auto;
+      transition: opacity 140ms ease, transform 150ms ease, border-color 150ms ease, background 150ms ease, box-shadow 150ms ease;
     }
 
     .swatch-actions .copy-hex-button {
-      margin-left: auto;
+      margin-left: 0;
     }
 
     .swatch .button.icon {
       width: 38px;
       min-width: 38px;
       min-height: 38px;
-    }
-
-    @container swatch (max-width: 120px) {
-      .swatch-actions {
-        flex-direction: column;
-        align-items: flex-start;
-        gap: 6px;
-      }
-
-      .swatch-actions .copy-hex-button {
-        margin-left: 0;
-      }
-    }
-
-    .swatch .button {
-      border-color: rgba(255, 255, 255, 0.34);
+      border: none;
+      background: transparent;
+      backdrop-filter: none;
+      box-shadow: none;
       color: var(--label-color);
-      background: rgba(255, 255, 255, 0.18);
-      backdrop-filter: blur(12px);
     }
 
-    .swatch.dark-ui .button {
-      border-color: rgba(0, 0, 0, 0.18);
-      background: rgba(0, 0, 0, 0.08);
+    .swatch .button.icon:hover {
+      background: rgba(128,128,128,0.2);
     }
 
-    .swatch .button:hover {
-      background: rgba(255, 255, 255, 0.3);
+    .move-btn {
+      cursor: grab;
     }
 
-    .swatch.dark-ui .button:hover {
-      background: rgba(0, 0, 0, 0.15);
+    .move-btn:active {
+      cursor: grabbing;
     }
 
     .color-info {
       display: grid;
       gap: 8px;
+      padding-top: 56px;
     }
 
     .swatch-name,
@@ -556,17 +577,30 @@
       opacity: 0.72;
     }
 
+    @media (max-width: 760px) {
+      .swatch-name,
+      .hex-field,
+      .rgb-value {
+        text-align: left;
+      }
+
+      .swatch-name,
+      .rgb-value {
+        text-align: left;
+      }
+    }
+
     .color-editor {
       position: fixed;
-      top: var(--editor-top, 24px);
-      left: var(--editor-left, 24px);
+      top: 96px;
+      right: 24px;
       z-index: 4;
-      width: min(360px, calc(100vw - 32px));
-      border: 1px solid rgba(151, 161, 181, 0.48);
+      width: min(440px, calc(100vw - 32px));
+      border: 1px solid var(--line);
       border-radius: 8px;
-      padding: 14px;
-      background: var(--editor-bg);
-      box-shadow: 0 24px 80px rgba(21, 23, 28, 0.22);
+      padding: 16px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
       backdrop-filter: blur(18px);
     }
 
@@ -757,7 +791,7 @@
     .picker-plane {
       position: relative;
       width: 100%;
-      aspect-ratio: 1.45;
+      aspect-ratio: 2.2;
       border: 1px solid var(--line);
       border-radius: 8px;
       background:
@@ -1082,14 +1116,20 @@
         gap: 8px;
       }
 
-      /* Row 1: Generate full width */
+      /* Row 1: Generate + Add Color */
       .palette-generate-group {
         width: 100%;
         margin-right: 0;
+        display: flex;
+        gap: 8px;
       }
 
       .palette-generate-group .button.primary {
         flex: 1;
+      }
+
+      .palette-generate-group #addBtn {
+        flex: 0 0 auto;
       }
 
       /* Row 2: all other controls in a wrapping flex row */
@@ -1099,14 +1139,9 @@
         gap: 8px;
         align-items: center;
         width: 100%;
-        /* reset tool-group borders inside secondary row */
       }
 
       .toolbar-secondary .button {
-        flex: 0 0 auto;
-      }
-
-      .toolbar-secondary .button#addBtn {
         flex: 0 0 auto;
       }
 
@@ -1128,11 +1163,87 @@
       }
 
       .swatch {
-        min-height: 168px;
+        min-height: 112px;
+        flex-direction: row;
+        align-items: center;
+        padding: 14px 16px;
+        gap: 0;
+        justify-content: space-between;
+      }
+
+      .move-btn {
+        display: flex;
+        cursor: grab;
+        touch-action: none;
+      }
+
+      .move-btn:active {
+        cursor: grabbing;
+        opacity: 1 !important;
+      }
+
+      .swatch-drag-zone {
+        display: none;
+      }
+
+      .swatch-actions {
+        position: static;
+        top: auto;
+        right: auto;
+        left: auto;
+        transform: none;
+        flex-direction: row;
+        flex-shrink: 0;
+        gap: 0;
+        background: none;
+        align-self: center;
+        order: 2;
+        opacity: 1;
+        pointer-events: auto;
+      }
+
+      /* On mobile, always show all buttons — no hover-hide for locked */
+      .swatch.has-locked:not(:hover) .swatch-actions .button.icon:not(.lock-btn-locked) {
+        opacity: 0.55;
+        pointer-events: auto;
+      }
+
+      .swatch-actions .copy-hex-button {
+        margin-left: 0;
+      }
+
+      .swatch .button.icon {
+        width: 32px;
+        min-width: 32px;
+        min-height: 32px;
+        border: none;
+        background: transparent;
+        backdrop-filter: none;
+        box-shadow: none;
+        opacity: 0.55;
+      }
+
+      .swatch .button.icon:hover,
+      .swatch .button.icon:active {
+        background: rgba(128,128,128,0.18);
+        opacity: 1;
+      }
+
+      .color-info {
+        flex: 1;
+        min-width: 0;
+        order: 1;
+        padding-top: 0;
+        padding-right: 8px;
       }
 
       .color-editor {
-        width: calc(100vw - 20px);
+        top: auto;
+        bottom: 0;
+        right: 0;
+        left: 0;
+        width: 100%;
+        border-radius: 12px 12px 0 0;
       }
 
       .modal-overlay {
@@ -1142,6 +1253,41 @@
 
       .adjustments-dialog {
         width: min(360px, 100%);
+      }
+
+      /* Vertical split on mobile */
+      .swatch-original-strip {
+        top: 0;
+        left: 0;
+        right: auto;
+        width: 50%;
+        height: 100%;
+      }
+
+      .swatch-divider {
+        top: 0;
+        bottom: 0;
+        left: 50%;
+        right: auto;
+        width: 1.5px;
+        height: 100%;
+      }
+
+      .swatch:first-child .swatch-original-strip::after {
+        bottom: auto;
+        top: 50%;
+        left: 4px;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+      }
+
+      .swatch-after-label {
+        top: 50%;
+        left: auto;
+        right: 4px;
+        transform: translateY(-50%);
+        writing-mode: vertical-rl;
+        margin-top: 0;
       }
     }
 
@@ -1163,10 +1309,9 @@
       <div class="toolbar" aria-label="Palette controls">
         <div class="palette-generate-group">
           <button class="button primary" id="generateBtn" type="button" title="Generate unlocked colors">Generate</button>
-
+          <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
         </div>
         <div class="toolbar-secondary">
-          <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
           <div class="tool-group-wrap">
             <button class="button icon" id="filtersBtn" type="button" title="Preview color filters" aria-label="Preview color filters"></button>
             <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
@@ -1656,7 +1801,8 @@
         x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>',
         chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>',
         share: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
-        trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>'
+        trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>',
+        grip: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="6" r="1.5" fill="currentColor"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="15" cy="18" r="1.5" fill="currentColor"/></svg>'
       };
       return icons[name] || "";
     }
@@ -1995,7 +2141,7 @@
       const hex = color.hex;
       editorEl.hidden = false;
       syncEditorChrome();
-      requestAnimationFrame(() => positionEditor(anchorEl));
+      // editor is fixed top-right, no dynamic positioning needed
       editorCloseBtn.innerHTML = iconSvg("x");
       editorFields.innerHTML = "";
 
@@ -2592,7 +2738,7 @@
           ? (adjustmentBaseColors[index]?.hex ?? color.hex)
           : color.hex;
         const labelColor = getContrastColor(buttonBaseHex);
-        swatch.className = `swatch${isLight(buttonBaseHex) ? " dark-ui" : ""}`;
+        swatch.className = `swatch${isLight(buttonBaseHex) ? " dark-ui" : ""}${color.locked ? " has-locked" : ""}`;
         swatch.dataset.colorIndex = String(index);
         swatch.style.setProperty("--swatch-color", displayHex);
         swatch.style.setProperty("--label-color", labelColor);
@@ -2632,22 +2778,6 @@
 
         const dragZone = document.createElement("div");
         dragZone.className = "swatch-drag-zone";
-        dragZone.draggable = true;
-        dragZone.addEventListener("dragstart", (event) => {
-          draggedColorIndex = index;
-          didDragColor = true;
-          swatch.classList.add("dragging");
-          event.dataTransfer.effectAllowed = "move";
-          event.dataTransfer.setData("text/plain", String(index));
-          const preview = createDragPreview(color, index);
-          event.dataTransfer.setDragImage(preview, 61, 34);
-          requestAnimationFrame(() => preview.remove());
-        });
-        dragZone.addEventListener("dragend", () => {
-          draggedColorIndex = null;
-          swatch.classList.remove("dragging", "drag-over");
-          setTimeout(() => { didDragColor = false; }, 0);
-        });
 
         swatch.addEventListener("dragover", (event) => {
           if (draggedColorIndex === null || draggedColorIndex === index) return;
@@ -2674,7 +2804,7 @@
         actions.className = "swatch-actions";
 
         const lockBtn = document.createElement("button");
-        lockBtn.className = "button icon";
+        lockBtn.className = `button icon${color.locked ? " lock-btn-locked" : ""}`;
         lockBtn.type = "button";
         lockBtn.title = color.locked ? "Unlock color" : "Lock color";
         lockBtn.setAttribute("aria-label", lockBtn.title);
@@ -2706,7 +2836,7 @@
           renderPalette();
         });
 
-        actions.append(lockBtn, copyBtn, deleteBtn);
+        // buttons appended below after moveBtn is set up
 
         const info = document.createElement("div");
         info.className = "color-info";
@@ -2714,28 +2844,113 @@
         const hexButton = document.createElement("button");
         hexButton.className = "hex-field";
         hexButton.type = "button";
-        hexButton.textContent = color.hex;
-        hexButton.setAttribute("aria-label", `Copy ${color.hex}`);
-        hexButton.title = "Copy hex code";
-        hexButton.addEventListener("click", () => {
-          copyText(color.hex);
+        // During adjustment preview, show original values in text — only the color changes visually
+        const textHex = isAdjusting ? (adjustmentBaseColors[index]?.hex ?? color.hex) : color.hex;
+        const textName = isAdjusting ? (adjustmentBaseColors[index]?.name ?? color.name) : color.name;
+
+        hexButton.textContent = textHex;
+        hexButton.setAttribute("aria-label", `Open editor for ${textHex}`);
+        hexButton.title = "Open color editor";
+        hexButton.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openEditor(index, swatch);
         });
 
         const rgbValue = document.createElement("div");
         rgbValue.className = "rgb-value";
-        rgbValue.textContent = rgbText(color.hex);
+        rgbValue.textContent = rgbText(textHex);
 
         info.append(hexButton);
 
-        if (color.name?.trim()) {
+        if (textName?.trim()) {
           const name = document.createElement("div");
           name.className = "swatch-name";
-          name.textContent = formatCssName(color.name.trim());
+          name.textContent = formatCssName(textName.trim());
           info.append(name);
         }
 
         info.append(rgbValue);
+
+        // Move (grip) button — drag to reorder on desktop, touch-drag on mobile
+        const moveBtn = document.createElement("button");
+        moveBtn.className = "button icon move-btn";
+        moveBtn.type = "button";
+        moveBtn.title = "Drag to reorder";
+        moveBtn.setAttribute("aria-label", "Drag to reorder");
+        moveBtn.innerHTML = iconSvg("grip");
+        moveBtn.draggable = true;
+        moveBtn.addEventListener("dragstart", (event) => {
+          draggedColorIndex = index;
+          didDragColor = true;
+          swatch.classList.add("dragging");
+          event.dataTransfer.effectAllowed = "move";
+          event.dataTransfer.setData("text/plain", String(index));
+          const preview = createDragPreview(color, index);
+          event.dataTransfer.setDragImage(preview, 61, 34);
+          requestAnimationFrame(() => preview.remove());
+        });
+        moveBtn.addEventListener("dragend", () => {
+          draggedColorIndex = null;
+          swatch.classList.remove("dragging", "drag-over");
+          setTimeout(() => { didDragColor = false; }, 0);
+        });
+        // moveBtn already added in actions.append above
+
+        let touchDragActive = false;
+        let touchGhost = null;
+        let activeDragIndex = index;
+
+        moveBtn.addEventListener("touchstart", (e) => {
+          e.preventDefault();
+          activeDragIndex = index;
+          touchDragActive = true;
+          moveBtn.style.opacity = "1";
+        }, { passive: false });
+
+        moveBtn.addEventListener("touchmove", (e) => {
+          if (!touchDragActive) return;
+          e.preventDefault();
+          const t = e.touches[0];
+
+          if (!touchGhost) {
+            touchGhost = swatch.cloneNode(true);
+            touchGhost.style.cssText = `position:fixed;left:0;top:0;width:${swatch.offsetWidth}px;height:${swatch.offsetHeight}px;opacity:0.8;pointer-events:none;z-index:9999;border-radius:4px;overflow:hidden;box-shadow:0 8px 24px rgba(0,0,0,0.22);`;
+            document.body.append(touchGhost);
+            swatch.style.opacity = "0.35";
+          }
+          const rect = paletteEl.getBoundingClientRect();
+          touchGhost.style.transform = `translate(${rect.left}px, ${t.clientY - swatch.offsetHeight / 2}px)`;
+
+          const el = document.elementFromPoint(t.clientX, t.clientY);
+          const target = el?.closest(".swatch");
+          if (target && target !== swatch) {
+            const toIdx = Number(target.dataset.colorIndex);
+            if (!isNaN(toIdx) && toIdx !== activeDragIndex) {
+              moveColor(activeDragIndex, toIdx);
+              activeDragIndex = toIdx;
+            }
+          }
+        }, { passive: false });
+
+        const endMoveTouch = () => {
+          if (!touchDragActive) return;
+          touchDragActive = false;
+          if (touchGhost) { touchGhost.remove(); touchGhost = null; }
+          swatch.style.opacity = "";
+          moveBtn.style.opacity = "";
+        };
+        moveBtn.addEventListener("touchend", endMoveTouch, { passive: true });
+        moveBtn.addEventListener("touchcancel", endMoveTouch, { passive: true });
+
+        actions.append(lockBtn, moveBtn, copyBtn, deleteBtn);
+
         swatch.append(actions, dragZone, info);
+
+        // After render, set --info-height so buttons sit just above the info block
+        requestAnimationFrame(() => {
+          const infoH = info.getBoundingClientRect().height;
+          swatch.style.setProperty("--info-height", `${infoH}px`);
+        });
         paletteEl.append(swatch);
       });
       updateControls();
@@ -2842,7 +3057,7 @@
       if (isAdjusting) closeAdjustments();
       if (colors.length >= maxColors) return;
       const hex = nextRelatedColorHex();
-      colors.push({ hex, name: closestCssName(hex), locked: false });
+      colors.unshift({ hex, name: closestCssName(hex), locked: false });
       renderPalette();
     }
 
