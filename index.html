@@ -123,6 +123,11 @@
       flex-wrap: wrap;
       justify-content: flex-end;
       gap: 10px;
+      align-items: center;
+    }
+
+    .toolbar-secondary {
+      display: contents;
     }
 
     .palette-generate-group {
@@ -459,14 +464,38 @@
       opacity: 0.86;
     }
 
+    .swatch {
+      container-type: inline-size;
+      container-name: swatch;
+    }
+
     .swatch-actions {
       display: flex;
+      flex-wrap: nowrap;
       justify-content: space-between;
-      gap: 8px;
+      gap: 6px;
     }
 
     .swatch-actions .copy-hex-button {
       margin-left: auto;
+    }
+
+    .swatch .button.icon {
+      width: 38px;
+      min-width: 38px;
+      min-height: 38px;
+    }
+
+    @container swatch (max-width: 120px) {
+      .swatch-actions {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 6px;
+      }
+
+      .swatch-actions .copy-hex-button {
+        margin-left: 0;
+      }
     }
 
     .swatch .button {
@@ -973,10 +1002,17 @@
     }
 
     .saved-actions {
-      display: grid;
-      grid-template-columns: repeat(2, max-content);
+      display: flex;
       gap: 6px;
-      justify-content: end;
+      justify-content: flex-end;
+      align-items: center;
+    }
+
+    .saved-actions .button.icon {
+      width: 32px;
+      min-width: 32px;
+      min-height: 32px;
+      flex-shrink: 0;
     }
 
     .saved-actions .button {
@@ -1038,33 +1074,49 @@
       }
 
       .toolbar {
-        justify-content: stretch;
+        justify-content: flex-start;
+        flex-direction: column;
+        gap: 8px;
       }
 
+      /* Row 1: Generate full width */
       .palette-generate-group {
-        flex: 1 1 100%;
+        width: 100%;
         margin-right: 0;
       }
 
-      .toolbar .palette-generate-group .button {
-        flex: 1 1 calc(50% - 3px);
+      .palette-generate-group .button.primary {
+        flex: 1;
       }
 
-      .toolbar .palette-generate-group .harmony-picker {
-        flex: 0 0 42px;
+      /* Row 2: all other controls in a wrapping flex row */
+      .toolbar-secondary {
+        display: flex;
+        flex-wrap: wrap;
+        gap: 8px;
+        align-items: center;
+        width: 100%;
+        /* reset tool-group borders inside secondary row */
       }
 
-      .toolbar .button {
-        flex: 1 1 calc(50% - 8px);
+      .toolbar-secondary .button {
+        flex: 0 0 auto;
       }
 
-      .toolbar .button.icon {
-        flex: 0 0 42px;
+      .toolbar-secondary .button#addBtn {
+        flex: 0 0 auto;
       }
 
-      .toolbar .harmony-picker,
-      .toolbar .theme-toggle {
-        flex: 1 1 calc(50% - 8px);
+      .toolbar-secondary .tool-group-wrap {
+        border-left: none;
+        border-right: none;
+        padding: 0;
+      }
+
+      .toolbar-secondary .theme-toggle-wrap {
+        border-left: none;
+        padding-left: 0;
+        margin-left: auto;
       }
 
       .palette {
@@ -1110,16 +1162,18 @@
           <button class="button primary" id="generateBtn" type="button" title="Generate unlocked colors">Generate</button>
 
         </div>
-        <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
-        <div class="tool-group-wrap">
-          <button class="button icon" id="filtersBtn" type="button" title="Preview color filters" aria-label="Preview color filters"></button>
-          <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
-        </div>
-        <button class="button icon save" id="saveBtn" type="button" title="Save current palette" aria-label="Save current palette"></button>
-        <button class="button icon" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link"></button>
-        <button class="button icon" id="exportBtn" type="button" title="Export palette as PNG" aria-label="Export palette as PNG"></button>
-        <div class="theme-toggle-wrap">
-          <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
+        <div class="toolbar-secondary">
+          <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
+          <div class="tool-group-wrap">
+            <button class="button icon" id="filtersBtn" type="button" title="Preview color filters" aria-label="Preview color filters"></button>
+            <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
+          </div>
+          <button class="button icon save" id="saveBtn" type="button" title="Save current palette" aria-label="Save current palette"></button>
+          <button class="button icon" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link"></button>
+          <button class="button icon" id="exportBtn" type="button" title="Export palette as PNG" aria-label="Export palette as PNG"></button>
+          <div class="theme-toggle-wrap">
+            <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
+          </div>
         </div>
       </div>
     </section>
@@ -1597,7 +1651,8 @@
         export: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>',
         x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>',
         chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>',
-        share: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>'
+        share: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
+        trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>'
       };
       return icons[name] || "";
     }
@@ -2505,8 +2560,12 @@
       colors.forEach((color, index) => {
         const swatch = document.createElement("article");
         const displayHex = previewHex(color.hex);
-        const labelColor = getContrastColor(displayHex);
-        swatch.className = `swatch${isLight(displayHex) ? " dark-ui" : ""}`;
+        // Buttons sit over the top (original) strip, so base their contrast on the original color
+        const buttonBaseHex = isAdjusting
+          ? (adjustmentBaseColors[index]?.hex ?? color.hex)
+          : color.hex;
+        const labelColor = getContrastColor(buttonBaseHex);
+        swatch.className = `swatch${isLight(buttonBaseHex) ? " dark-ui" : ""}`;
         swatch.dataset.colorIndex = String(index);
         swatch.style.setProperty("--swatch-color", displayHex);
         swatch.style.setProperty("--label-color", labelColor);
@@ -2723,9 +2782,11 @@
         });
 
         const deleteBtn = document.createElement("button");
-        deleteBtn.className = "button danger";
+        deleteBtn.className = "button icon danger";
         deleteBtn.type = "button";
-        deleteBtn.textContent = "Delete";
+        deleteBtn.title = "Delete palette";
+        deleteBtn.setAttribute("aria-label", "Delete palette");
+        deleteBtn.innerHTML = iconSvg("trash");
         deleteBtn.addEventListener("click", () => {
           savedPalettes.splice(index, 1);
           persistSavedPalettes();
