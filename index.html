@@ -306,6 +306,66 @@
       box-shadow: none;
     }
 
+    /* Export dropdown */
+    .export-wrap {
+      position: relative;
+      display: inline-flex;
+    }
+
+    .export-dropdown {
+      position: absolute;
+      top: calc(100% + 8px);
+      right: 0;
+      z-index: 100;
+      min-width: 210px;
+      border: 1px solid var(--line);
+      border-radius: 10px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      padding: 6px;
+      display: flex;
+      flex-direction: column;
+      gap: 1px;
+    }
+
+    .export-dropdown[hidden] {
+      display: none;
+    }
+
+    .export-option {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+      width: 100%;
+      padding: 9px 12px;
+      border: none;
+      border-radius: 7px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.88rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background 120ms ease;
+    }
+
+    .export-option:hover {
+      background: var(--control-soft);
+    }
+
+    .export-option svg {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+      opacity: 0.7;
+    }
+
+    .export-divider {
+      height: 1px;
+      background: var(--line);
+      margin: 4px 6px;
+    }
+
     .workspace {
       display: grid;
       grid-template-columns: 1fr;
@@ -1202,7 +1262,7 @@
         pointer-events: auto;
       }
 
-      /* On mobile, always show all buttons — no hover-hide for locked */
+      /* On mobile, always show all buttons */
       .swatch.has-locked:not(:hover) .swatch-actions .button.icon:not(.lock-btn-locked) {
         opacity: 0.55;
         pointer-events: auto;
@@ -1296,6 +1356,243 @@
         width: calc(100vw - 20px);
       }
     }
+
+    /* ── Color Info Modal ───────────────────────────────────────────────── */
+    .color-info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      background: rgba(0, 0, 0, 0.38);
+      padding: 20px;
+      backdrop-filter: blur(2px);
+      -webkit-backdrop-filter: blur(2px);
+      animation: ciOverlayIn 160ms ease forwards;
+    }
+    .color-info-overlay[hidden] { display: none; }
+
+    @keyframes ciOverlayIn {
+      from { opacity: 0; }
+      to   { opacity: 1; }
+    }
+
+    .color-info-dialog {
+      width: min(480px, 100%);
+      background: var(--panel);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      box-shadow: var(--shadow);
+      overflow: hidden;
+      animation: ciDialogIn 180ms cubic-bezier(0.22, 1, 0.36, 1) forwards;
+    }
+
+    @keyframes ciDialogIn {
+      from { opacity: 0; transform: translateY(10px) scale(0.98); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+
+    .ci-header {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      padding: 16px 16px 14px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .ci-color-swatch {
+      width: 36px;
+      height: 36px;
+      border-radius: 8px;
+      flex-shrink: 0;
+      border: 1px solid rgba(0,0,0,0.08);
+    }
+
+    .ci-header-text {
+      flex: 1;
+      min-width: 0;
+    }
+
+    .ci-header-hex {
+      font-size: 1rem;
+      font-weight: 600;
+      color: var(--ink);
+      letter-spacing: 0.02em;
+      font-family: monospace;
+    }
+
+    .ci-header-name {
+      font-size: 0.78rem;
+      color: var(--muted);
+      margin-top: 1px;
+    }
+
+    .ci-close {
+      background: none;
+      border: none;
+      cursor: pointer;
+      color: var(--muted);
+      padding: 6px;
+      border-radius: 6px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      flex-shrink: 0;
+      transition: color 120ms, background 120ms;
+    }
+    .ci-close:hover { color: var(--ink); background: var(--line); }
+    .ci-close svg { width: 18px; height: 18px; stroke: currentColor; fill: none; stroke-width: 2; stroke-linecap: round; }
+
+    .ci-body {
+      padding: 18px 16px;
+      display: grid;
+      gap: 22px;
+    }
+
+    .ci-section-title {
+      font-size: 0.7rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.1em;
+      color: var(--muted);
+      margin: 0 0 12px;
+    }
+
+    /* Accessibility */
+    .ci-contrast-rows {
+      display: grid;
+      gap: 10px;
+    }
+
+    .ci-contrast-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ci-contrast-preview {
+      width: 40px;
+      height: 26px;
+      border-radius: 5px;
+      border: 1px solid var(--line);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 0.65rem;
+      font-weight: 700;
+      flex-shrink: 0;
+      letter-spacing: 0.03em;
+    }
+
+    .ci-contrast-label {
+      font-size: 0.8rem;
+      color: var(--muted);
+      width: 48px;
+      flex-shrink: 0;
+    }
+
+    .ci-contrast-ratio {
+      font-size: 0.82rem;
+      font-weight: 600;
+      color: var(--ink);
+      width: 52px;
+      flex-shrink: 0;
+    }
+
+    .ci-score-dots {
+      display: flex;
+      gap: 4px;
+      align-items: center;
+    }
+
+    .ci-dot {
+      width: 9px;
+      height: 9px;
+      border-radius: 50%;
+      background: var(--line);
+      transition: background 120ms;
+    }
+    .ci-dot.filled { background: var(--accent); }
+
+    .ci-wcag-badge {
+      font-size: 0.65rem;
+      font-weight: 700;
+      padding: 2px 5px;
+      border-radius: 4px;
+      letter-spacing: 0.04em;
+      margin-left: auto;
+    }
+    .ci-wcag-badge.pass-aaa { background: #d1fae5; color: #065f46; }
+    .ci-wcag-badge.pass-aa  { background: #dbeafe; color: #1e40af; }
+    .ci-wcag-badge.fail     { background: #fee2e2; color: #991b1b; }
+    .dark-mode .ci-wcag-badge.pass-aaa { background: #064e3b; color: #6ee7b7; }
+    .dark-mode .ci-wcag-badge.pass-aa  { background: #1e3a5f; color: #93c5fd; }
+    .dark-mode .ci-wcag-badge.fail     { background: #7f1d1d; color: #fca5a5; }
+
+    /* Harmonies */
+    .ci-harmony-rows {
+      display: grid;
+      gap: 12px;
+    }
+
+    .ci-harmony-row {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .ci-harmony-name {
+      font-size: 0.78rem;
+      color: var(--muted);
+      width: 120px;
+      flex-shrink: 0;
+    }
+
+    .ci-harmony-swatches {
+      display: flex;
+      gap: 5px;
+      flex-wrap: wrap;
+    }
+
+    .ci-swatch-chip {
+      width: 26px;
+      height: 26px;
+      border-radius: 5px;
+      border: 1px solid rgba(0,0,0,0.1);
+      cursor: pointer;
+      position: relative;
+      flex-shrink: 0;
+      transition: transform 100ms, box-shadow 100ms;
+    }
+    .ci-swatch-chip:hover {
+      transform: scale(1.18);
+      box-shadow: 0 2px 8px rgba(0,0,0,0.18);
+      z-index: 2;
+    }
+
+    .ci-chip-tooltip {
+      position: absolute;
+      bottom: calc(100% + 5px);
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--ink);
+      color: var(--panel);
+      font-size: 0.65rem;
+      font-family: monospace;
+      padding: 3px 6px;
+      border-radius: 4px;
+      white-space: nowrap;
+      pointer-events: none;
+      opacity: 0;
+      transition: opacity 100ms;
+    }
+    .ci-swatch-chip:hover .ci-chip-tooltip { opacity: 1; }
+
+    @media (max-width: 600px) {
+      .ci-harmony-name { width: 100px; font-size: 0.73rem; }
+      .ci-swatch-chip  { width: 22px; height: 22px; }
+    }
   </style>
 </head>
 <body>
@@ -1309,6 +1606,8 @@
       <div class="toolbar" aria-label="Palette controls">
         <div class="palette-generate-group">
           <button class="button primary" id="generateBtn" type="button" title="Generate unlocked colors">Generate</button>
+          <button class="button icon" id="undoBtn" type="button" title="Undo generation" aria-label="Undo generation" disabled></button>
+          <button class="button icon" id="redoBtn" type="button" title="Redo generation" aria-label="Redo generation" disabled></button>
           <button class="button" id="addBtn" type="button" title="Add color">Add Color</button>
         </div>
         <div class="toolbar-secondary">
@@ -1317,8 +1616,45 @@
             <button class="button icon" id="adjustBtn" type="button" title="Adjust palette colors" aria-label="Adjust palette colors"></button>
           </div>
           <button class="button icon save" id="saveBtn" type="button" title="Save current palette" aria-label="Save current palette"></button>
-          <button class="button icon" id="shareBtn" type="button" title="Copy share link" aria-label="Copy share link"></button>
-          <button class="button icon" id="exportBtn" type="button" title="Export palette as PNG" aria-label="Export palette as PNG"></button>
+          <div class="export-wrap" id="exportWrap">
+            <button class="button icon" id="exportBtn" type="button" title="Export palette" aria-label="Export palette" aria-haspopup="true" aria-expanded="false"></button>
+            <div class="export-dropdown" id="exportDropdown" hidden>
+              <button class="export-option" id="exportPng" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M2 7h14M7 7v7"/></svg>
+                Export as image
+              </button>
+              <button class="export-option" id="exportSvg" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="8" rx="1.5"/><path d="M5 9h2l1.5 2L10 7l1.5 2H13"/></svg>
+                Export as SVG
+              </button>
+              <button class="export-option" id="exportUrl" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 10.5a3 3 0 0 0 4.243 0l2.121-2.121a3 3 0 0 0-4.243-4.243l-1.06 1.06"/><path d="M10.5 7.5a3 3 0 0 0-4.243 0L4.136 9.621a3 3 0 0 0 4.243 4.243l1.06-1.06"/></svg>
+                Export as URL
+              </button>
+              <div class="export-divider"></div>
+              <button class="export-option" id="exportCss" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l-2 5 2 5M14 4l2 5-2 5M7 13l4-8"/></svg>
+                Download CSS Variables
+              </button>
+              <button class="export-option" id="exportTailwind" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6c0-2 1-3 3-3s3 1.5 2 3-3 3-2 5 1 3 3 3M10 6c0-2 1-3 3-3s3 1.5 2 3-3 3-2 5 1 3 3 3"/></svg>
+                Copy Tailwind Config
+              </button>
+              <button class="export-option" id="exportScss" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l-2 5 2 5M14 4l2 5-2 5M11 7H7l-1 4h4l-1 4"/></svg>
+                Copy SCSS Variables
+              </button>
+              <button class="export-option" id="exportJson" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4C5 4 4 5 4 6v2c0 1-1 1-1 2s1 1 1 2v2c0 1 1 2 2 2M12 4c1 0 2 1 2 2v2c0 1 1 1 1 2s-1 1-1 2v2c0 1-1 2-2 2"/></svg>
+                Copy JSON
+              </button>
+              <div class="export-divider"></div>
+              <button class="export-option" id="exportHexList" type="button">
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M4 9h10M4 12h6"/></svg>
+                Copy HEX Codes
+              </button>
+            </div>
+          </div>
           <div class="theme-toggle-wrap">
             <button class="button theme-toggle" id="themeBtn" type="button" title="Switch to dark mode" aria-label="Switch to dark mode" aria-pressed="false"></button>
           </div>
@@ -1389,6 +1725,16 @@
           <input id="adjustTemperature" data-adjustment="temperature" type="range" min="-100" max="100" step="1" value="0">
           <input data-adjustment-number="temperature" type="number" min="-100" max="100" step="1" value="0" aria-label="Temperature adjustment">
         </div>
+        <div class="adjustment-field">
+          <label for="adjustContrast">Contrast</label>
+          <input id="adjustContrast" data-adjustment="contrast" type="range" min="-100" max="100" step="1" value="0">
+          <input data-adjustment-number="contrast" type="number" min="-100" max="100" step="1" value="0" aria-label="Contrast adjustment">
+        </div>
+        <div class="adjustment-field">
+          <label for="adjustVibrance">Vibrance</label>
+          <input id="adjustVibrance" data-adjustment="vibrance" type="range" min="-100" max="100" step="1" value="0">
+          <input data-adjustment-number="vibrance" type="number" min="-100" max="100" step="1" value="0" aria-label="Vibrance adjustment">
+        </div>
       </div>
       <div class="adjustment-actions">
         <button class="button" id="adjustCancelBtn" type="button">Cancel</button>
@@ -1424,6 +1770,14 @@
           <input type="radio" name="paletteFilter" value="tritanopia">
           <span>Tritanopia</span>
         </label>
+        <label class="filter-option">
+          <input type="radio" name="paletteFilter" value="protanomaly">
+          <span>Protanomaly</span>
+        </label>
+        <label class="filter-option">
+          <input type="radio" name="paletteFilter" value="tritanomaly">
+          <span>Tritanomaly</span>
+        </label>
       </div>
       <div class="adjustment-actions">
         <button class="button" id="filterCancelBtn" type="button">Cancel</button>
@@ -1431,6 +1785,8 @@
       </div>
     </div>
   </section>
+
+  <div class="color-info-overlay" id="colorInfoOverlay" hidden aria-modal="true" role="dialog" aria-label="Color information"></div>
 
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
@@ -1450,7 +1806,7 @@
     const filtersBtn = document.getElementById("filtersBtn");
     const adjustBtn = document.getElementById("adjustBtn");
     const saveBtn = document.getElementById("saveBtn");
-    const shareBtn = document.getElementById("shareBtn");
+
     const exportBtn = document.getElementById("exportBtn");
     const themeBtn = document.getElementById("themeBtn");
     const adjustmentModal = document.getElementById("adjustmentModal");
@@ -1482,6 +1838,11 @@
     let isAdjusting = false;
     let activeFilter = "none";
     let filterBeforeOpen = "none";
+
+    // Undo / redo history (generation snapshots only)
+    let generationHistory = [];
+    let historyIndex = -1;
+    const MAX_HISTORY = 50;
 
     function randomHex() {
       const value = Math.floor(Math.random() * 0xffffff);
@@ -1565,6 +1926,16 @@
           [0.95, 0.05, 0],
           [0, 0.433, 0.567],
           [0, 0.475, 0.525]
+        ],
+        protanomaly: [
+          [0.817, 0.183, 0],
+          [0.333, 0.667, 0],
+          [0, 0.125, 0.875]
+        ],
+        tritanomaly: [
+          [0.967, 0.033, 0],
+          [0, 0.733, 0.267],
+          [0, 0.183, 0.817]
         ]
       };
       const matrix = matrices[type];
@@ -1579,7 +1950,7 @@
 
     function filteredHex(hex, filter = activeFilter) {
       if (filter === "grayscale") return grayscaleHex(hex);
-      if (["protanopia", "deuteranopia", "tritanopia"].includes(filter)) return colorBlindHex(hex, filter);
+      if (["protanopia", "deuteranopia", "tritanopia", "protanomaly", "tritanomaly"].includes(filter)) return colorBlindHex(hex, filter);
       return hex;
     }
 
@@ -1702,17 +2073,38 @@
       // in HSL — typically clamped to 0° (red). Increasing saturation on them would
       // turn them red, which is wrong. Keep them achromatic by clamping saturation to 0.
       const isNeutral = hsl.s < 5;
+
+      // Vibrance: boosts saturation of less-saturated colors more than already-vivid ones
+      let vibranceSat = hsl.s;
+      if (!isNeutral && adjustments.vibrance) {
+        const boost = (adjustments.vibrance / 100) * (1 - hsl.s / 100) * 60;
+        vibranceSat = clamp(hsl.s + boost, 0, 100);
+      }
+
       const shiftedRgb = hslToRgb({
         h: wrapHue(hsl.h + adjustments.hue),
-        s: isNeutral ? 0 : clamp(hsl.s + adjustments.saturation, 0, 100),
+        s: isNeutral ? 0 : clamp(vibranceSat + adjustments.saturation, 0, 100),
         l: clamp(hsl.l + adjustments.brightness, 0, 100)
       });
+
       const temperature = adjustments.temperature;
-      return rgbToHex({
+      let rgb = {
         r: shiftedRgb.r + (temperature > 0 ? temperature * 0.8 : temperature * 0.25),
         g: shiftedRgb.g + (temperature > 0 ? temperature * 0.18 : Math.abs(temperature) * 0.12),
         b: shiftedRgb.b + (temperature > 0 ? -temperature * 0.65 : Math.abs(temperature) * 0.85)
-      });
+      };
+
+      // Contrast: scale each channel around mid-gray (128)
+      if (adjustments.contrast) {
+        const factor = 1 + adjustments.contrast / 100;
+        rgb = {
+          r: clamp((rgb.r - 128) * factor + 128, 0, 255),
+          g: clamp((rgb.g - 128) * factor + 128, 0, 255),
+          b: clamp((rgb.b - 128) * factor + 128, 0, 255)
+        };
+      }
+
+      return rgbToHex(rgb);
     }
 
     function rgbToCmyk({ r, g, b }) {
@@ -1797,12 +2189,15 @@
         filter: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M22 3H2l8 9.5V20l4 2v-9.5L22 3Z"></path></svg>',
         sliders: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M4 21v-7"></path><path d="M4 10V3"></path><path d="M12 21v-9"></path><path d="M12 8V3"></path><path d="M20 21v-5"></path><path d="M20 12V3"></path><path d="M2 14h4"></path><path d="M10 8h4"></path><path d="M18 16h4"></path></svg>',
         save: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M19 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h11l5 5v11a2 2 0 0 1-2 2Z"></path><path d="M17 21v-8H7v8"></path><path d="M7 3v5h8"></path></svg>',
-        export: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>',
+        export: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M17 8l-5-5-5 5"></path><path d="M12 3v12"></path></svg>',
         x: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M18 6 6 18"></path><path d="m6 6 12 12"></path></svg>',
         chevronDown: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="m6 9 6 6 6-6"></path></svg>',
         share: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="18" cy="5" r="3"></circle><circle cx="6" cy="12" r="3"></circle><circle cx="18" cy="19" r="3"></circle><line x1="8.59" y1="13.51" x2="15.42" y2="17.49"></line><line x1="15.41" y1="6.51" x2="8.59" y2="10.49"></line></svg>',
         trash: '<svg viewBox="0 0 24 24" aria-hidden="true"><polyline points="3 6 5 6 21 6"></polyline><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"></path><path d="M10 11v6"></path><path d="M14 11v6"></path><path d="M9 6V4a1 1 0 0 1 1-1h4a1 1 0 0 1 1 1v2"></path></svg>',
-        grip: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="6" r="1.5" fill="currentColor"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="15" cy="18" r="1.5" fill="currentColor"/></svg>'
+        grip: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="6" r="1.5" fill="currentColor"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="15" cy="18" r="1.5" fill="currentColor"/></svg>',
+        info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
+        undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>',
+        redo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>'
       };
       return icons[name] || "";
     }
@@ -1812,8 +2207,9 @@
       filtersBtn.innerHTML = iconSvg("filter");
       adjustBtn.innerHTML = iconSvg("sliders");
       saveBtn.innerHTML = iconSvg("save");
-      shareBtn.innerHTML = iconSvg("share");
       exportBtn.innerHTML = iconSvg("export");
+      document.getElementById("undoBtn").innerHTML = iconSvg("undo");
+      document.getElementById("redoBtn").innerHTML = iconSvg("redo");
     }
 
     function applyTheme(theme) {
@@ -1917,6 +2313,236 @@
       document.execCommand("copy");
       copyInput.remove();
       showToast(`${text} copied.`);
+    }
+
+    // ── Color Info Modal ────────────────────────────────────────────────────
+
+    function wcagContrastRatio(hex1, hex2) {
+      function relativeLuminance(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        return [r, g, b].reduce((acc, c) => {
+          const s = c / 255;
+          return acc + (s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)) * [0.2126, 0.7152, 0.0722][acc === 0 ? 0 : acc === 0.2126 ? 1 : 2];
+        }, 0);
+      }
+      // proper luminance calculation
+      function lum(hex) {
+        const { r, g, b } = hexToRgb(hex);
+        const chan = [r, g, b].map(c => {
+          const s = c / 255;
+          return s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4);
+        });
+        return 0.2126 * chan[0] + 0.7152 * chan[1] + 0.0722 * chan[2];
+      }
+      const l1 = lum(hex1), l2 = lum(hex2);
+      const lighter = Math.max(l1, l2), darker = Math.min(l1, l2);
+      return (lighter + 0.05) / (darker + 0.05);
+    }
+
+    function contrastScore(ratio) {
+      // 1-5 scale: 1 = very poor, 5 = excellent
+      if (ratio >= 7)    return 5;
+      if (ratio >= 4.5)  return 4;
+      if (ratio >= 3)    return 3;
+      if (ratio >= 2)    return 2;
+      return 1;
+    }
+
+    function wcagBadge(ratio) {
+      const score = contrastScore(ratio);
+      const cls = ratio >= 7 ? "pass-aaa" : ratio >= 4.5 ? "pass-aa" : "fail";
+      return { text: `${score}/5`, cls };
+    }
+
+    function harmonyHexes(hex, type) {
+      const hsl = rgbToHsl(hexToRgb(hex));
+      const { h, s, l } = hsl;
+      const mk = (hh, ss, ll) => hslToHex({ h: wrapHue(hh), s: clamp(ss, 5, 95), l: clamp(ll, 8, 92) });
+
+      switch (type) {
+        case "analogous":
+          return [mk(h - 30, s, l), hex, mk(h + 30, s, l)];
+        case "complementary":
+          return [hex, mk(h + 180, s, l)];
+        case "split-complementary":
+          return [hex, mk(h + 150, s, l), mk(h + 210, s, l)];
+        case "triadic":
+          return [hex, mk(h + 120, s, l), mk(h + 240, s, l)];
+        case "tetradic":
+          return [hex, mk(h + 90, s, l), mk(h + 180, s, l), mk(h + 270, s, l)];
+        case "square":
+          return [hex, mk(h + 90, s, l), mk(h + 180, s, l), mk(h + 270, s, l)];
+        default:
+          return [hex];
+      }
+    }
+
+    function openColorInfoModal(hex, name) {
+      const overlay = document.getElementById("colorInfoOverlay");
+      overlay.innerHTML = "";
+
+      const dialog = document.createElement("div");
+      dialog.className = "color-info-dialog";
+
+      // Header
+      const header = document.createElement("div");
+      header.className = "ci-header";
+
+      const swatchEl = document.createElement("div");
+      swatchEl.className = "ci-color-swatch";
+      swatchEl.style.background = hex;
+
+      const headerText = document.createElement("div");
+      headerText.className = "ci-header-text";
+      const hexEl = document.createElement("div");
+      hexEl.className = "ci-header-hex";
+      hexEl.textContent = hex;
+      const nameEl = document.createElement("div");
+      nameEl.className = "ci-header-name";
+      nameEl.textContent = name ? formatCssName(name.trim()) : "";
+      headerText.append(hexEl);
+      if (name?.trim()) headerText.append(nameEl);
+
+      const closeBtn = document.createElement("button");
+      closeBtn.className = "ci-close";
+      closeBtn.type = "button";
+      closeBtn.setAttribute("aria-label", "Close");
+      closeBtn.innerHTML = iconSvg("x");
+      closeBtn.addEventListener("click", closeColorInfoModal);
+
+      header.append(swatchEl, headerText, closeBtn);
+
+      // Body
+      const body = document.createElement("div");
+      body.className = "ci-body";
+
+      // ── Accessibility section
+      const accessSection = document.createElement("div");
+      const accessTitle = document.createElement("div");
+      accessTitle.className = "ci-section-title";
+      accessTitle.textContent = "Accessibility";
+      accessSection.append(accessTitle);
+
+      const contrastRows = document.createElement("div");
+      contrastRows.className = "ci-contrast-rows";
+
+      [
+        { bg: "#ffffff", label: "on White", textLabel: "Aa" },
+        { bg: "#000000", label: "on Black", textLabel: "Aa" }
+      ].forEach(({ bg, label, textLabel }) => {
+        const ratio = wcagContrastRatio(hex, bg);
+        const score = contrastScore(ratio);
+        const badge = wcagBadge(ratio);
+
+        const row = document.createElement("div");
+        row.className = "ci-contrast-row";
+
+        const preview = document.createElement("div");
+        preview.className = "ci-contrast-preview";
+        preview.style.background = bg;
+        preview.style.color = hex;
+        preview.style.border = bg === "#ffffff" ? "1px solid var(--line)" : "1px solid transparent";
+        preview.textContent = textLabel;
+
+        const lbl = document.createElement("div");
+        lbl.className = "ci-contrast-label";
+        lbl.textContent = label;
+
+        const ratioEl = document.createElement("div");
+        ratioEl.className = "ci-contrast-ratio";
+        ratioEl.textContent = ratio.toFixed(2) + ":1";
+
+        const dots = document.createElement("div");
+        dots.className = "ci-score-dots";
+        for (let i = 1; i <= 5; i++) {
+          const dot = document.createElement("div");
+          dot.className = "ci-dot" + (i <= score ? " filled" : "");
+          dots.append(dot);
+        }
+
+        const badgeEl = document.createElement("span");
+        badgeEl.className = `ci-wcag-badge ${badge.cls}`;
+        badgeEl.textContent = badge.text;
+
+        row.append(preview, lbl, ratioEl, dots, badgeEl);
+        contrastRows.append(row);
+      });
+
+      accessSection.append(contrastRows);
+
+      // ── Harmonies section
+      const harmSection = document.createElement("div");
+      const harmTitle = document.createElement("div");
+      harmTitle.className = "ci-section-title";
+      harmTitle.textContent = "Harmonies";
+      harmSection.append(harmTitle);
+
+      const harmRows = document.createElement("div");
+      harmRows.className = "ci-harmony-rows";
+
+      const harmonyTypes = [
+        "analogous",
+        "complementary",
+        "split-complementary",
+        "triadic",
+        "tetradic",
+      ];
+
+      harmonyTypes.forEach(type => {
+        const hexes = harmonyHexes(hex, type);
+
+        const row = document.createElement("div");
+        row.className = "ci-harmony-row";
+
+        const nameLbl = document.createElement("div");
+        nameLbl.className = "ci-harmony-name";
+        nameLbl.textContent = type.charAt(0).toUpperCase() + type.slice(1);
+
+        const chips = document.createElement("div");
+        chips.className = "ci-harmony-swatches";
+
+        hexes.forEach(h => {
+          const chip = document.createElement("div");
+          chip.className = "ci-swatch-chip";
+          chip.style.background = h;
+          chip.title = h;
+
+          const tooltip = document.createElement("span");
+          tooltip.className = "ci-chip-tooltip";
+          tooltip.textContent = h;
+
+          chip.append(tooltip);
+          chip.addEventListener("click", () => copyText(h));
+          chips.append(chip);
+        });
+
+        row.append(nameLbl, chips);
+        harmRows.append(row);
+      });
+
+      harmSection.append(harmRows);
+
+      body.append(accessSection, harmSection);
+      dialog.append(header, body);
+      overlay.append(dialog);
+      overlay.hidden = false;
+
+      overlay.addEventListener("click", (e) => {
+        if (e.target === overlay) closeColorInfoModal();
+      }, { once: false });
+
+      // close on Escape
+      overlay._escHandler = (e) => { if (e.key === "Escape") closeColorInfoModal(); };
+      document.addEventListener("keydown", overlay._escHandler);
+    }
+
+    function closeColorInfoModal() {
+      const overlay = document.getElementById("colorInfoOverlay");
+      overlay.hidden = true;
+      if (overlay._escHandler) {
+        document.removeEventListener("keydown", overlay._escHandler);
+        overlay._escHandler = null;
+      }
     }
 
     function syncEditorChrome() {
@@ -2266,7 +2892,7 @@
       return adjustmentRanges.reduce((values, input) => {
         values[input.dataset.adjustment] = Number(input.value);
         return values;
-      }, { hue: 0, saturation: 0, brightness: 0, temperature: 0 });
+      }, { hue: 0, saturation: 0, brightness: 0, temperature: 0, contrast: 0, vibrance: 0 });
     }
 
     function resetAdjustmentControls() {
@@ -2942,7 +3568,18 @@
         moveBtn.addEventListener("touchend", endMoveTouch, { passive: true });
         moveBtn.addEventListener("touchcancel", endMoveTouch, { passive: true });
 
-        actions.append(lockBtn, moveBtn, copyBtn, deleteBtn);
+        const infoBtn = document.createElement("button");
+        infoBtn.className = "button icon";
+        infoBtn.type = "button";
+        infoBtn.title = "Color info";
+        infoBtn.setAttribute("aria-label", "Color info");
+        infoBtn.innerHTML = iconSvg("info");
+        infoBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openColorInfoModal(color.hex, color.name);
+        });
+
+        actions.append(lockBtn, moveBtn, copyBtn, infoBtn, deleteBtn);
 
         swatch.append(actions, dragZone, info);
 
@@ -3045,10 +3682,47 @@
       });
     }
 
+    function pushToHistory(snapshot) {
+      // Truncate forward history if we're not at the end
+      generationHistory = generationHistory.slice(0, historyIndex + 1);
+      generationHistory.push(snapshot.map(c => ({ ...c })));
+      if (generationHistory.length > MAX_HISTORY) generationHistory.shift();
+      historyIndex = generationHistory.length - 1;
+      updateUndoRedoBtns();
+    }
+
+    function updateUndoRedoBtns() {
+      const undoBtn = document.getElementById("undoBtn");
+      const redoBtn = document.getElementById("redoBtn");
+      if (undoBtn) undoBtn.disabled = historyIndex <= 0;
+      if (redoBtn) redoBtn.disabled = historyIndex >= generationHistory.length - 1;
+    }
+
+    function undoGeneration() {
+      if (historyIndex <= 0) return;
+      historyIndex -= 1;
+      colors = generationHistory[historyIndex].map(c => ({ ...c }));
+      renderPalette();
+      if (editingIndex !== null) updateEditor();
+      updateUndoRedoBtns();
+      showToast("Undone.");
+    }
+
+    function redoGeneration() {
+      if (historyIndex >= generationHistory.length - 1) return;
+      historyIndex += 1;
+      colors = generationHistory[historyIndex].map(c => ({ ...c }));
+      renderPalette();
+      if (editingIndex !== null) updateEditor();
+      updateUndoRedoBtns();
+      showToast("Redone.");
+    }
+
     function generatePalette() {
       if (isAdjusting) closeAdjustments();
       const nextHexes = generateSmartPaletteHexes();
       colors = colors.map((color, index) => color.locked ? color : { ...color, hex: nextHexes[index], name: closestCssName(nextHexes[index]) });
+      pushToHistory(colors);
       renderPalette();
       if (editingIndex !== null) updateEditor();
     }
@@ -3057,7 +3731,12 @@
       if (isAdjusting) closeAdjustments();
       if (colors.length >= maxColors) return;
       const hex = nextRelatedColorHex();
-      colors.unshift({ hex, name: closestCssName(hex), locked: false });
+      // On desktop (≥760px) append to end; on mobile prepend to start
+      if (window.innerWidth >= 760) {
+        colors.push({ hex, name: closestCssName(hex), locked: false });
+      } else {
+        colors.unshift({ hex, name: closestCssName(hex), locked: false });
+      }
       renderPalette();
     }
 
@@ -3231,13 +3910,127 @@
       showToast("Palette exported as PNG.");
     }
 
+    function exportSvg() {
+      const swatchW = 200;
+      const swatchH = 400;
+      const total = colors.length;
+      const width = swatchW * total;
+      const svgParts = colors.map((color, i) => {
+        const x = i * swatchW;
+        const labelColor = getContrastColor(color.hex) === "#FFFFFF" ? "#ffffff" : "#15171c";
+        const lines = [color.hex, rgbText(color.hex), hslText(color.hex)];
+        const textEls = lines.map((line, li) => `<text x="${x + swatchW / 2}" y="${swatchH - 80 + li * 22}" text-anchor="middle" font-family="Inter,ui-sans-serif,sans-serif" font-size="${li === 0 ? 15 : 12}" font-weight="${li === 0 ? 700 : 400}" fill="${labelColor}" opacity="${li === 0 ? 1 : 0.78}">${line}</text>`).join("\n");
+        return `<rect x="${x}" y="0" width="${swatchW}" height="${swatchH}" fill="${color.hex}"/>\n${textEls}`;
+      }).join("\n");
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${swatchH}" viewBox="0 0 ${width} ${swatchH}">\n${svgParts}\n</svg>`;
+      const blob = new Blob([svg], { type: "image/svg+xml" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const paletteName = autoNamePalette(getPaletteColors());
+      a.download = `PallleteGen-${paletteName.replace(/[^a-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "-")}.svg`;
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("Palette exported as SVG.");
+    }
+
+    function exportCssVars() {
+      const lines = [":root {"];
+      colors.forEach((color, i) => {
+        const slug = (color.name || `color-${i + 1}`).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        lines.push(`  --color-${slug}: ${color.hex};`);
+      });
+      lines.push("}");
+      const css = lines.join("\n");
+      const blob = new Blob([css], { type: "text/css" });
+      const url = URL.createObjectURL(blob);
+      const a = document.createElement("a");
+      const paletteName = autoNamePalette(getPaletteColors());
+      a.download = `PallleteGen-${paletteName.replace(/[^a-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "-")}.css`;
+      a.href = url;
+      a.click();
+      URL.revokeObjectURL(url);
+      showToast("CSS variables downloaded!");
+    }
+
+    function exportTailwind() {
+      const entries = colors.map((color, i) => {
+        const slug = (color.name || `color-${i + 1}`).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        return `        '${slug}': '${color.hex}',`;
+      }).join("\n");
+      const text = `/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${entries}\n      },\n    },\n  },\n};`;
+      copyText(text);
+      showToast("Tailwind config copied!");
+    }
+
+    function exportScss() {
+      const lines = colors.map((color, i) => {
+        const slug = (color.name || `color-${i + 1}`).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
+        return `$color-${slug}: ${color.hex};`;
+      });
+      copyText(lines.join("\n"));
+      showToast("SCSS variables copied!");
+    }
+
+    function exportJson() {
+      const obj = colors.map((color, i) => {
+        const { r, g, b } = hexToRgb(color.hex);
+        const { h, s, l } = rgbToHsl({ r, g, b });
+        return {
+          index: i + 1,
+          name: color.name || null,
+          hex: color.hex,
+          rgb: { r, g, b },
+          hsl: { h: Math.round(h), s: Math.round(s), l: Math.round(l) }
+        };
+      });
+      copyText(JSON.stringify(obj, null, 2));
+      showToast("JSON copied!");
+    }
+
+    function exportHexList() {
+      copyText(colors.map(c => c.hex).join("\n"));
+      showToast("HEX codes copied!");
+    }
+
     generateBtn.addEventListener("click", generatePalette);
+    document.getElementById("undoBtn").addEventListener("click", undoGeneration);
+    document.getElementById("redoBtn").addEventListener("click", redoGeneration);
     addBtn.addEventListener("click", addColor);
     filtersBtn.addEventListener("click", openFilters);
     adjustBtn.addEventListener("click", openAdjustments);
     saveBtn.addEventListener("click", savePalette);
-    shareBtn.addEventListener("click", sharePalette);
-    exportBtn.addEventListener("click", exportImage);
+        const exportDropdown = document.getElementById("exportDropdown");
+    exportBtn.addEventListener("click", (e) => {
+      e.stopPropagation();
+      const open = !exportDropdown.hidden;
+      exportDropdown.hidden = open;
+      exportBtn.setAttribute("aria-expanded", String(!open));
+    });
+    document.addEventListener("click", (e) => {
+      if (!document.getElementById("exportWrap").contains(e.target)) {
+        exportDropdown.hidden = true;
+        exportBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+    document.addEventListener("keydown", (e) => {
+      if (e.key === "Escape" && !exportDropdown.hidden) {
+        exportDropdown.hidden = true;
+        exportBtn.setAttribute("aria-expanded", "false");
+      }
+    });
+    function closeExportDropdown() {
+      exportDropdown.hidden = true;
+      exportBtn.setAttribute("aria-expanded", "false");
+    }
+    document.getElementById("exportPng").addEventListener("click", () => { closeExportDropdown(); exportImage(); });
+    document.getElementById("exportSvg").addEventListener("click", () => { closeExportDropdown(); exportSvg(); });
+    document.getElementById("exportUrl").addEventListener("click", () => { closeExportDropdown(); sharePalette(); });
+    document.getElementById("exportCss").addEventListener("click", () => { closeExportDropdown(); exportCssVars(); });
+    document.getElementById("exportTailwind").addEventListener("click", () => { closeExportDropdown(); exportTailwind(); });
+    document.getElementById("exportScss").addEventListener("click", () => { closeExportDropdown(); exportScss(); });
+    document.getElementById("exportJson").addEventListener("click", () => { closeExportDropdown(); exportJson(); });
+    document.getElementById("exportHexList").addEventListener("click", () => { closeExportDropdown(); exportHexList(); });
     themeBtn.addEventListener("click", toggleTheme);
     adjustCancelTopBtn.addEventListener("click", () => closeAdjustments({ restore: true }));
     adjustCancelBtn.addEventListener("click", () => closeAdjustments({ restore: true }));
@@ -3290,6 +4083,18 @@
         closeEditor();
       }
       const activeTag = document.activeElement.tagName;
+      if (event.key === "z" && (event.ctrlKey || event.metaKey) && !event.shiftKey && !["INPUT", "TEXTAREA"].includes(activeTag)) {
+        event.preventDefault();
+        undoGeneration();
+        return;
+      }
+      if ((event.key === "y" && (event.ctrlKey || event.metaKey)) || (event.key === "z" && (event.ctrlKey || event.metaKey) && event.shiftKey)) {
+        if (!["INPUT", "TEXTAREA"].includes(activeTag)) {
+          event.preventDefault();
+          redoGeneration();
+          return;
+        }
+      }
       if (event.code === "Space" && !["INPUT", "TEXTAREA"].includes(activeTag)) {
         event.preventDefault();
         if (activeTag === "SELECT") document.activeElement.blur();
@@ -3305,6 +4110,7 @@
       colors = new Array(5).fill(null).map(() => ({ hex: "#000000", name: "", locked: false }));
       colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: closestCssName(hex), locked: false }));
     }
+    pushToHistory(colors);
     renderPalette();
     renderSavedPalettes();
   </script>
