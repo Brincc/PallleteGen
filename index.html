@@ -84,7 +84,7 @@
     }
 
     .app {
-      width: min(1280px, calc(100% - 32px));
+      width: min(1400px, calc(100% - 32px));
       margin: 0 auto;
       padding: 28px 0;
     }
@@ -366,6 +366,17 @@
       margin: 4px 6px;
     }
 
+    .export-section-label {
+      padding: 6px 12px 3px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      letter-spacing: 0.07em;
+      text-transform: uppercase;
+      color: var(--muted);
+      pointer-events: none;
+      user-select: none;
+    }
+
     .workspace {
       display: grid;
       grid-template-columns: 1fr;
@@ -635,6 +646,132 @@
       line-height: 1.25;
       text-align: center;
       opacity: 0.72;
+      white-space: pre-line;
+    }
+
+    button.swatch-name.swatch-info-trigger {
+      cursor: pointer;
+      border: none;
+      background: transparent;
+    }
+
+    button.swatch-name.swatch-info-trigger:hover {
+      opacity: 1;
+    }
+
+    /* ── Swatch info picker modal ───────────────────────────────────── */
+    .swatch-info-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: rgba(21, 23, 28, 0.48);
+      backdrop-filter: blur(3px);
+    }
+
+    .swatch-info-overlay[hidden] { display: none; }
+
+    .swatch-info-dialog {
+      width: min(340px, 100%);
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .swatch-info-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--line);
+    }
+
+    .swatch-info-header h2 {
+      margin: 0;
+      font-size: 0.95rem;
+    }
+
+    .swatch-info-options {
+      display: grid;
+      gap: 4px;
+      padding: 10px;
+    }
+
+    .swatch-info-option-row {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .swatch-info-option {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex: 1;
+      min-width: 0;
+      padding: 10px 12px;
+      border: 1px solid transparent;
+      border-radius: 8px;
+      background: transparent;
+      color: var(--ink);
+      font: inherit;
+      font-size: 0.88rem;
+      text-align: left;
+      cursor: pointer;
+      transition: background 120ms ease, border-color 120ms ease;
+    }
+
+    .swatch-info-option:hover {
+      background: var(--control-soft);
+    }
+
+    .swatch-info-option.active {
+      background: var(--control-soft);
+      border-color: var(--accent);
+      color: var(--accent);
+    }
+
+    .swatch-info-option-check {
+      width: 16px;
+      height: 16px;
+      flex: 0 0 16px;
+      margin-left: auto;
+      opacity: 0;
+    }
+
+    .swatch-info-option.active .swatch-info-option-check {
+      opacity: 1;
+    }
+
+    .swatch-info-copy-btn {
+      flex: 0 0 32px;
+      width: 32px;
+      min-width: 32px !important;
+      min-height: 32px !important;
+      padding: 0;
+      opacity: 0.5;
+      transition: opacity 120ms ease, border-color 150ms ease, background 150ms ease;
+    }
+
+    .swatch-info-copy-btn:hover {
+      opacity: 1;
+    }
+
+    .swatch-info-copy-btn svg {
+      width: 15px;
+      height: 15px;
+    }
+
+    .swatch-info-option-preview {
+      font-size: 0.74rem;
+      opacity: 0.55;
+      margin-left: 2px;
     }
 
     @media (max-width: 760px) {
@@ -1130,7 +1267,7 @@
       position: fixed;
       right: 18px;
       bottom: 18px;
-      z-index: 5;
+      z-index: 9999;
       max-width: min(320px, calc(100vw - 36px));
       border: 1px solid rgba(21, 23, 28, 0.12);
       border-radius: 8px;
@@ -1593,6 +1730,101 @@
       .ci-harmony-name { width: 100px; font-size: 0.73rem; }
       .ci-swatch-chip  { width: 22px; height: 22px; }
     }
+
+    /* ── Code export modal ────────────────────────────────────────────── */
+    .code-export-overlay {
+      position: fixed;
+      inset: 0;
+      z-index: 20;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 24px 16px;
+      background: rgba(21, 23, 28, 0.48);
+      backdrop-filter: blur(3px);
+    }
+
+    .code-export-overlay[hidden] { display: none; }
+
+    .code-export-dialog {
+      display: flex;
+      flex-direction: column;
+      width: min(620px, 100%);
+      max-height: min(680px, calc(100vh - 48px));
+      border: 1px solid var(--line);
+      border-radius: 12px;
+      background: var(--panel);
+      box-shadow: var(--shadow);
+      overflow: hidden;
+    }
+
+    .code-export-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      gap: 12px;
+      padding: 14px 16px 12px;
+      border-bottom: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .code-export-title {
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .code-export-title h2 {
+      margin: 0;
+      font-size: 0.95rem;
+      line-height: 1.2;
+    }
+
+    .code-export-lang {
+      display: inline-block;
+      padding: 2px 8px;
+      border-radius: 5px;
+      background: var(--control-soft);
+      border: 1px solid var(--line);
+      color: var(--muted);
+      font-size: 0.72rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+    }
+
+    .code-export-body {
+      flex: 1;
+      overflow: auto;
+      background: var(--control-soft);
+    }
+
+    .code-export-pre {
+      margin: 0;
+      padding: 18px 20px;
+      font-family: ui-monospace, "Cascadia Code", "Fira Code", "Fira Mono", "Roboto Mono", Menlo, monospace;
+      font-size: 0.82rem;
+      line-height: 1.65;
+      color: var(--ink);
+      white-space: pre;
+      overflow-x: auto;
+      tab-size: 2;
+    }
+
+    .code-export-footer {
+      display: flex;
+      align-items: center;
+      justify-content: flex-end;
+      gap: 8px;
+      padding: 12px 16px;
+      border-top: 1px solid var(--line);
+      flex-shrink: 0;
+    }
+
+    .code-export-footer .button svg {
+      width: 15px;
+      height: 15px;
+    }
   </style>
 </head>
 <body>
@@ -1619,39 +1851,40 @@
           <div class="export-wrap" id="exportWrap">
             <button class="button icon" id="exportBtn" type="button" title="Export palette" aria-label="Export palette" aria-haspopup="true" aria-expanded="false"></button>
             <div class="export-dropdown" id="exportDropdown" hidden>
+              <div class="export-section-label">Export</div>
               <button class="export-option" id="exportPng" type="button">
-                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="2" width="14" height="14" rx="2"/><path d="M2 7h14M7 7v7"/></svg>
-                Export as image
+                <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="3" width="14" height="12" rx="2"/><path d="M2 12l3.5-3.5a1.5 1.5 0 0 1 2.1 0L10 11"/><path d="M10 11l1.5-1.5a1.5 1.5 0 0 1 2.1 0L16 12"/><circle cx="13" cy="7" r="1.2" fill="currentColor" stroke="none"/></svg>
+                PNG
               </button>
               <button class="export-option" id="exportSvg" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="2" y="5" width="14" height="8" rx="1.5"/><path d="M5 9h2l1.5 2L10 7l1.5 2H13"/></svg>
-                Export as SVG
+                SVG
               </button>
               <button class="export-option" id="exportUrl" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M7.5 10.5a3 3 0 0 0 4.243 0l2.121-2.121a3 3 0 0 0-4.243-4.243l-1.06 1.06"/><path d="M10.5 7.5a3 3 0 0 0-4.243 0L4.136 9.621a3 3 0 0 0 4.243 4.243l1.06-1.06"/></svg>
-                Export as URL
+                URL
               </button>
               <div class="export-divider"></div>
               <button class="export-option" id="exportCss" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l-2 5 2 5M14 4l2 5-2 5M7 13l4-8"/></svg>
-                Download CSS Variables
+                CSS Variables
               </button>
               <button class="export-option" id="exportTailwind" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M3 6c0-2 1-3 3-3s3 1.5 2 3-3 3-2 5 1 3 3 3M10 6c0-2 1-3 3-3s3 1.5 2 3-3 3-2 5 1 3 3 3"/></svg>
-                Copy Tailwind Config
+                Tailwind Config
               </button>
               <button class="export-option" id="exportScss" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4l-2 5 2 5M14 4l2 5-2 5M11 7H7l-1 4h4l-1 4"/></svg>
-                Copy SCSS Variables
+                SCSS Variables
               </button>
               <button class="export-option" id="exportJson" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M6 4C5 4 4 5 4 6v2c0 1-1 1-1 2s1 1 1 2v2c0 1 1 2 2 2M12 4c1 0 2 1 2 2v2c0 1 1 1 1 2s-1 1-1 2v2c0 1-1 2-2 2"/></svg>
-                Copy JSON
+                JSON
               </button>
               <div class="export-divider"></div>
               <button class="export-option" id="exportHexList" type="button">
                 <svg viewBox="0 0 18 18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 6h10M4 9h10M4 12h6"/></svg>
-                Copy HEX Codes
+                HEX Codes
               </button>
             </div>
           </div>
@@ -1788,6 +2021,37 @@
 
   <div class="color-info-overlay" id="colorInfoOverlay" hidden aria-modal="true" role="dialog" aria-label="Color information"></div>
 
+  <!-- Code export modal -->
+  <div class="code-export-overlay" id="codeExportOverlay" hidden aria-modal="true" role="dialog" aria-labelledby="codeExportTitle">
+    <div class="code-export-dialog">
+      <div class="code-export-header">
+        <div class="code-export-title">
+          <h2 id="codeExportTitle">Export Code</h2>
+          <span class="code-export-lang" id="codeExportLang"></span>
+        </div>
+        <button class="button icon" id="codeExportCloseBtn" type="button" title="Close" aria-label="Close"></button>
+      </div>
+      <div class="code-export-body">
+        <pre class="code-export-pre" id="codeExportPre"></pre>
+      </div>
+      <div class="code-export-footer">
+        <button class="button" id="codeExportDownloadBtn" type="button"></button>
+        <button class="button primary" id="codeExportCopyBtn" type="button"></button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Swatch info picker modal -->
+  <div class="swatch-info-overlay" id="swatchInfoOverlay" hidden aria-modal="true" role="dialog" aria-labelledby="swatchInfoTitle">
+    <div class="swatch-info-dialog">
+      <div class="swatch-info-header">
+        <h2 id="swatchInfoTitle">Text under hex code</h2>
+        <button class="button icon" id="swatchInfoCloseBtn" type="button" title="Close" aria-label="Close"></button>
+      </div>
+      <div class="swatch-info-options" id="swatchInfoOptions"></div>
+    </div>
+  </div>
+
   <div class="toast" id="toast" role="status" aria-live="polite"></div>
 
   <script>
@@ -1826,6 +2090,7 @@
     const themeStorageKey = "color-palette-creator-theme";
     const previewStorageKey = "color-palette-creator-preview";
     const currentPaletteKey = "color-palette-creator-current";
+    const swatchInfoKey = "color-palette-creator-swatch-info";
     const minColors = 2;
     const maxColors = 12;
     let colors = [];
@@ -1838,6 +2103,16 @@
     let isAdjusting = false;
     let activeFilter = "none";
     let filterBeforeOpen = "none";
+    let swatchInfoModes = (() => {
+      try {
+        const stored = JSON.parse(localStorage.getItem(swatchInfoKey));
+        if (Array.isArray(stored) && stored.length > 0) return stored;
+      } catch {}
+      // Legacy: single string value
+      const legacy = localStorage.getItem(swatchInfoKey);
+      if (legacy && legacy !== "null") return [legacy];
+      return ["name"];
+    })();
 
     // Undo / redo history (generation snapshots only)
     let generationHistory = [];
@@ -1988,6 +2263,48 @@
     function hslText(hex) {
       const { h, s, l } = rgbToHsl(hexToRgb(hex));
       return `HSL ${h}, ${s}%, ${l}%`;
+    }
+
+    function hsbText(hex) {
+      const { h, s, b } = rgbToHsv(hexToRgb(hex));
+      return `HSB ${h}, ${s}%, ${b}%`;
+    }
+
+    function cmykText(hex) {
+      const { c, m, y, k } = rgbToCmyk(hexToRgb(hex));
+      return `CMYK ${c}, ${m}, ${y}, ${k}`;
+    }
+
+    function labText(hex) {
+      const { l, a, b } = rgbToLab(hexToRgb(hex));
+      return `LAB ${l}, ${a}, ${b}`;
+    }
+
+    function swatchInfoTextForMode(mode, hex, name, index) {
+      switch (mode) {
+        case "name":   return (name?.trim() ? formatCssName(name.trim()) : null);
+        case "rgb":    return rgbText(hex);
+        case "hsb":    return hsbText(hex);
+        case "hsl":    return hslText(hex);
+        case "cmyk":   return cmykText(hex);
+        case "lab":    return labText(hex);
+        default:       return null;
+      }
+    }
+
+    function swatchInfoText(hex, name, index) {
+      // Returns a single string for the swatch label (first selected non-null)
+      // Used for the clickable info element on each swatch
+      const lines = swatchInfoLines(hex, name, index);
+      return lines[0] || null;
+    }
+
+    function swatchInfoLines(hex, name, index) {
+      // Returns array of all selected info lines in the canonical SWATCH_INFO_OPTIONS order
+      return SWATCH_INFO_OPTIONS
+        .filter(({ value }) => swatchInfoModes.includes(value))
+        .map(({ value }) => swatchInfoTextForMode(value, hex, name, index))
+        .filter(Boolean);
     }
 
     function formatCssName(name) {
@@ -2288,6 +2605,7 @@
           return { ...color, hex, name: closestCssName(hex) };
         });
         activeFilter = "none";
+        pushToHistory(colors);
         showToast("Filter applied to palette.");
       }
       closeFilters();
@@ -2582,6 +2900,7 @@
       editorEl.style.setProperty("--editor-top", `${clamp(top, viewportPadding, maxTop)}px`);
     }
 
+    let _editColorHistoryTimer = null;
     function setEditingColor(hex, refreshEditor = false) {
       if (editingIndex === null || !colors[editingIndex]) return;
       colors[editingIndex].hex = hex;
@@ -2592,6 +2911,9 @@
         const nameLockBtn = editorFields.querySelector(".name-lock-btn");
         if (nameLockBtn) syncNameLockBtn(nameLockBtn, false);
       }
+      // Debounce history push so continuous slider drags produce one history entry
+      clearTimeout(_editColorHistoryTimer);
+      _editColorHistoryTimer = setTimeout(() => pushToHistory(colors), 400);
       renderPalette();
       if (refreshEditor) updateEditor();
       else {
@@ -2953,6 +3275,7 @@
     function applyAdjustments() {
       closeAdjustments();
       colors = colors.map((color) => ({ ...color, name: closestCssName(color.hex) }));
+      pushToHistory(colors);
       renderPalette();
       showToast("Palette adjustments applied.");
     }
@@ -3459,6 +3782,7 @@
           if (editingIndex === index) closeEditor();
           if (editingIndex !== null && editingIndex > index) editingIndex -= 1;
           colors.splice(index, 1);
+          pushToHistory(colors);
           renderPalette();
         });
 
@@ -3482,20 +3806,19 @@
           openEditor(index, swatch);
         });
 
-        const rgbValue = document.createElement("div");
-        rgbValue.className = "rgb-value";
-        rgbValue.textContent = rgbText(textHex);
-
         info.append(hexButton);
 
-        if (textName?.trim()) {
-          const name = document.createElement("div");
-          name.className = "swatch-name";
-          name.textContent = formatCssName(textName.trim());
-          info.append(name);
-        }
-
-        info.append(rgbValue);
+        const infoLines = swatchInfoLines(textHex, textName, index);
+        const infoEl = document.createElement("button");
+        infoEl.className = "swatch-name swatch-info-trigger";
+        infoEl.type = "button";
+        infoEl.title = "Change swatch display";
+        infoEl.textContent = infoLines.join("\n") || "—";
+        infoEl.addEventListener("click", (e) => {
+          e.stopPropagation();
+          openSwatchInfoModal(textHex, textName);
+        });
+        info.append(infoEl);
 
         // Move (grip) button — drag to reorder on desktop, touch-drag on mobile
         const moveBtn = document.createElement("button");
@@ -3737,6 +4060,7 @@
       } else {
         colors.unshift({ hex, name: closestCssName(hex), locked: false });
       }
+      pushToHistory(colors);
       renderPalette();
     }
 
@@ -3841,7 +4165,7 @@
       await document.fonts.load("700 28px Inter");
       await document.fonts.load("500 28px Inter");
 
-      const width = 1600;
+      const width = 2400;
       const colorHeight = 900;
       const footerHeight = 130;
       const height = colorHeight + footerHeight;
@@ -3859,11 +4183,12 @@
         ctx.fillStyle = getContrastColor(color.hex);
         const fontSize = colors.length > 8 ? 18 : colors.length > 6 ? 22 : 28;
         const lineHeight = fontSize * 1.35;
+        const infoLines = swatchInfoLines(color.hex, color.name, index);
+        const nameOnly = swatchInfoModes.length === 1 && swatchInfoModes[0] === "name";
         const labelLines = [
           colorDisplayName(color, index),
           color.hex,
-          rgbText(color.hex),
-          hslText(color.hex)
+          ...(!nameOnly ? infoLines : [])
         ];
         ctx.textAlign = "center";
         ctx.textBaseline = "middle";
@@ -3871,7 +4196,12 @@
         ctx.shadowBlur = 10;
         const bottomPadding = 58;
         const startY = colorHeight - bottomPadding - ((labelLines.length - 1) * lineHeight);
+        const baseColor = getContrastColor(color.hex);
         labelLines.forEach((line, lineIndex) => {
+          // name = full, hex = 0.72, extra info lines = 0.48
+          const alpha = lineIndex === 0 ? 1 : lineIndex === 1 ? 0.72 : 0.48;
+          const rgb = baseColor === "#FFFFFF" ? "255,255,255" : "21,23,28";
+          ctx.fillStyle = `rgba(${rgb},${alpha})`;
           ctx.font = `${lineIndex === 0 ? 700 : 500} ${fontSize}px Inter, ui-sans-serif, sans-serif`;
           ctx.fillText(line, x + swatchWidth / 2, startY + lineIndex * lineHeight, Math.max(96, swatchWidth - 18));
         });
@@ -3915,14 +4245,30 @@
       const swatchH = 400;
       const total = colors.length;
       const width = swatchW * total;
+      const defs = colors.map((_, i) => `<clipPath id="clip${i}"><rect x="${i * swatchW}" y="0" width="${swatchW}" height="${swatchH}"/></clipPath>`).join("\n");
       const svgParts = colors.map((color, i) => {
         const x = i * swatchW;
         const labelColor = getContrastColor(color.hex) === "#FFFFFF" ? "#ffffff" : "#15171c";
-        const lines = [color.hex, rgbText(color.hex), hslText(color.hex)];
-        const textEls = lines.map((line, li) => `<text x="${x + swatchW / 2}" y="${swatchH - 80 + li * 22}" text-anchor="middle" font-family="Inter,ui-sans-serif,sans-serif" font-size="${li === 0 ? 15 : 12}" font-weight="${li === 0 ? 700 : 400}" fill="${labelColor}" opacity="${li === 0 ? 1 : 0.78}">${line}</text>`).join("\n");
-        return `<rect x="${x}" y="0" width="${swatchW}" height="${swatchH}" fill="${color.hex}"/>\n${textEls}`;
+        const infoLines = swatchInfoLines(color.hex, color.name, i);
+        const nameOnly = swatchInfoModes.length === 1 && swatchInfoModes[0] === "name";
+        const lines = [
+          color.hex,
+          ...(!nameOnly ? infoLines : [])
+        ];
+        // Lay lines out bottom-up from a bottom anchor, clamped to the swatch
+        const lineH = 22;
+        const bottomAnchor = swatchH - 18;
+        const totalTextH = lines.length * lineH;
+        const startY = Math.max(lineH, bottomAnchor - totalTextH + lineH);
+        const textEls = lines.map((line, li) => {
+          // hex line = 0.72, extra info lines = 0.48
+          const opacity = li === 0 ? 0.72 : 0.48;
+          const y = startY + li * lineH;
+          return `<text x="${x + swatchW / 2}" y="${y}" text-anchor="middle" font-family="Inter,ui-sans-serif,sans-serif" font-size="${li === 0 ? 15 : 12}" font-weight="${li === 0 ? 700 : 400}" fill="${labelColor}" opacity="${opacity}">${line}</text>`;
+        }).join("\n");
+        return `<rect x="${x}" y="0" width="${swatchW}" height="${swatchH}" fill="${color.hex}"/>\n<g clip-path="url(#clip${i})">\n${textEls}\n</g>`;
       }).join("\n");
-      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${swatchH}" viewBox="0 0 ${width} ${swatchH}">\n${svgParts}\n</svg>`;
+      const svg = `<svg xmlns="http://www.w3.org/2000/svg" width="${width}" height="${swatchH}" viewBox="0 0 ${width} ${swatchH}">\n<defs>\n${defs}\n</defs>\n${svgParts}\n</svg>`;
       const blob = new Blob([svg], { type: "image/svg+xml" });
       const url = URL.createObjectURL(blob);
       const a = document.createElement("a");
@@ -3941,16 +4287,7 @@
         lines.push(`  --color-${slug}: ${color.hex};`);
       });
       lines.push("}");
-      const css = lines.join("\n");
-      const blob = new Blob([css], { type: "text/css" });
-      const url = URL.createObjectURL(blob);
-      const a = document.createElement("a");
-      const paletteName = autoNamePalette(getPaletteColors());
-      a.download = `PallleteGen-${paletteName.replace(/[^a-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "-")}.css`;
-      a.href = url;
-      a.click();
-      URL.revokeObjectURL(url);
-      showToast("CSS variables downloaded!");
+      openCodeExportModal({ label: "CSS", lang: ".css", code: lines.join("\n") });
     }
 
     function exportTailwind() {
@@ -3959,8 +4296,7 @@
         return `        '${slug}': '${color.hex}',`;
       }).join("\n");
       const text = `/** @type {import('tailwindcss').Config} */\nmodule.exports = {\n  theme: {\n    extend: {\n      colors: {\n${entries}\n      },\n    },\n  },\n};`;
-      copyText(text);
-      showToast("Tailwind config copied!");
+      openCodeExportModal({ label: "Tailwind", lang: ".js", code: text });
     }
 
     function exportScss() {
@@ -3968,8 +4304,7 @@
         const slug = (color.name || `color-${i + 1}`).toLowerCase().replace(/\s+/g, "-").replace(/[^a-z0-9-]/g, "");
         return `$color-${slug}: ${color.hex};`;
       });
-      copyText(lines.join("\n"));
-      showToast("SCSS variables copied!");
+      openCodeExportModal({ label: "SCSS", lang: ".scss", code: lines.join("\n") });
     }
 
     function exportJson() {
@@ -3984,8 +4319,181 @@
           hsl: { h: Math.round(h), s: Math.round(s), l: Math.round(l) }
         };
       });
-      copyText(JSON.stringify(obj, null, 2));
-      showToast("JSON copied!");
+      openCodeExportModal({ label: "JSON", lang: ".json", code: JSON.stringify(obj, null, 2) });
+    }
+
+    // ── Swatch info picker modal ───────────────────────────────────────
+    const SWATCH_INFO_OPTIONS = [
+      { value: "name",  label: "Color name",    preview: "Cobalt Blue" },
+      { value: "rgb",   label: "RGB",           preview: "RGB 0, 71, 171" },
+      { value: "hsb",   label: "HSB",           preview: "HSB 217, 100%, 67%" },
+      { value: "hsl",   label: "HSL",           preview: "HSL 217, 100%, 34%" },
+      { value: "cmyk",  label: "CMYK",          preview: "CMYK 100, 58, 0, 33" },
+      { value: "lab",   label: "LAB",           preview: "LAB 29, 14, −55" },
+    ];
+
+    function initSwatchInfoModal() {
+      const overlay  = document.getElementById("swatchInfoOverlay");
+      const closeBtn = document.getElementById("swatchInfoCloseBtn");
+      const optionsEl = document.getElementById("swatchInfoOptions");
+      closeBtn.innerHTML = iconSvg("x");
+
+      SWATCH_INFO_OPTIONS.forEach(({ value, label, preview }) => {
+        const btn = document.createElement("button");
+        const isActive = swatchInfoModes.includes(value);
+        btn.className = `swatch-info-option${isActive ? " active" : ""}`;
+        btn.type = "button";
+        btn.dataset.value = value;
+        btn.innerHTML = `
+          <span>${label}</span>
+          <span class="swatch-info-option-preview">${preview}</span>
+        `;
+
+        // Checkmark (stays inside the toggle button)
+        const checkSvg = document.createElement("span");
+        checkSvg.innerHTML = `<svg class="swatch-info-option-check" viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><polyline points="2.5,8.5 6,12 13.5,4"/></svg>`;
+        btn.append(checkSvg.firstElementChild);
+
+        btn.addEventListener("click", () => {
+          const idx = swatchInfoModes.indexOf(value);
+          if (idx === -1) {
+            swatchInfoModes.push(value);
+          } else {
+            // Don't allow deselecting if it's the only one
+            if (swatchInfoModes.length > 1) {
+              swatchInfoModes.splice(idx, 1);
+            }
+          }
+          localStorage.setItem(swatchInfoKey, JSON.stringify(swatchInfoModes));
+          // Update all button active states
+          optionsEl.querySelectorAll(".swatch-info-option").forEach(b => {
+            b.classList.toggle("active", swatchInfoModes.includes(b.dataset.value));
+          });
+          renderPalette();
+          // Don't close — allow multi-select
+        });
+
+        // Copy button — outside the toggle, in its own row wrapper
+        const copyBtn = document.createElement("button");
+        copyBtn.className = "button icon swatch-info-copy-btn";
+        copyBtn.type = "button";
+        copyBtn.title = "Copy value";
+        copyBtn.setAttribute("aria-label", "Copy value");
+        copyBtn.dataset.copyValue = preview;
+        copyBtn.innerHTML = iconSvg("clipboard");
+        copyBtn.addEventListener("click", (e) => {
+          e.stopPropagation();
+          const val = copyBtn.dataset.copyValue;
+          if (val) copyText(val);
+        });
+
+        const row = document.createElement("div");
+        row.className = "swatch-info-option-row";
+        row.append(btn, copyBtn);
+        optionsEl.append(row);
+      });
+
+      closeBtn.addEventListener("click", closeSwatchInfoModal);
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) closeSwatchInfoModal(); });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !overlay.hidden) closeSwatchInfoModal();
+      });
+    }
+
+    let _swatchInfoContext = { hex: "#0047ab", name: "Cobalt Blue" };
+
+    function openSwatchInfoModal(hex, name) {
+      if (hex) _swatchInfoContext = { hex, name: name || "" };
+      // Sync active state and live previews
+      document.querySelectorAll(".swatch-info-option").forEach(b => {
+        b.classList.toggle("active", swatchInfoModes.includes(b.dataset.value));
+        const liveText = swatchInfoTextForMode(b.dataset.value, _swatchInfoContext.hex, _swatchInfoContext.name, 0) || "";
+        const previewEl = b.querySelector(".swatch-info-option-preview");
+        if (previewEl) {
+          previewEl.textContent = liveText;
+        }
+        // Copy button is now a sibling of the toggle button, inside the row wrapper
+        const copyBtn = b.parentElement && b.parentElement.querySelector(".swatch-info-copy-btn");
+        if (copyBtn) {
+          copyBtn.dataset.copyValue = liveText;
+        }
+      });
+      document.getElementById("swatchInfoOverlay").hidden = false;
+    }
+
+    function closeSwatchInfoModal() {
+      document.getElementById("swatchInfoOverlay").hidden = true;
+    }
+    let _codeExportState = null;
+
+    function openCodeExportModal({ label, lang, code }) {
+      _codeExportState = { label, lang, code };
+      const overlay  = document.getElementById("codeExportOverlay");
+      const pre      = document.getElementById("codeExportPre");
+      const langEl   = document.getElementById("codeExportLang");
+      const titleEl  = document.getElementById("codeExportTitle");
+      const copyBtn  = document.getElementById("codeExportCopyBtn");
+      const dlBtn    = document.getElementById("codeExportDownloadBtn");
+      const closeBtn = document.getElementById("codeExportCloseBtn");
+
+      titleEl.textContent = `Export ${label}`;
+      langEl.textContent  = lang;
+      pre.textContent     = code;
+
+      // Download button label + icon
+      dlBtn.innerHTML = `${iconSvg("download")} Download${lang}`;
+      copyBtn.innerHTML = `${iconSvg("clipboard")} Copy`;
+
+      overlay.hidden = false;
+      copyBtn.focus();
+    }
+
+    function closeCodeExportModal() {
+      document.getElementById("codeExportOverlay").hidden = true;
+      _codeExportState = null;
+    }
+
+    function initCodeExportModal() {
+      const overlay  = document.getElementById("codeExportOverlay");
+      const copyBtn  = document.getElementById("codeExportCopyBtn");
+      const dlBtn    = document.getElementById("codeExportDownloadBtn");
+      const closeBtn = document.getElementById("codeExportCloseBtn");
+
+      closeBtn.innerHTML = iconSvg("x");
+
+      closeBtn.addEventListener("click", closeCodeExportModal);
+      overlay.addEventListener("click", (e) => { if (e.target === overlay) closeCodeExportModal(); });
+      document.addEventListener("keydown", (e) => {
+        if (e.key === "Escape" && !overlay.hidden) closeCodeExportModal();
+      });
+
+      copyBtn.addEventListener("click", () => {
+        if (!_codeExportState) return;
+        if (navigator.clipboard && window.isSecureContext) {
+          navigator.clipboard.writeText(_codeExportState.code)
+            .then(() => showToast(`${_codeExportState.label} copied!`))
+            .catch(() => fallbackCopy(_codeExportState.code));
+        } else {
+          fallbackCopy(_codeExportState.code);
+        }
+      });
+
+      dlBtn.addEventListener("click", () => {
+        if (!_codeExportState) return;
+        const { lang, code, label } = _codeExportState;
+        const mimeMap = { ".css": "text/css", ".js": "text/javascript", ".scss": "text/x-scss", ".json": "application/json" };
+        const mime = mimeMap[lang] || "text/plain";
+        const paletteName = autoNamePalette(getPaletteColors());
+        const safeBase = `PallleteGen-${paletteName.replace(/[^a-zA-Z0-9 _-]/g, "").trim().replace(/\s+/g, "-")}`;
+        const blob = new Blob([code], { type: mime });
+        const url  = URL.createObjectURL(blob);
+        const a    = document.createElement("a");
+        a.download = `${safeBase}${lang}`;
+        a.href = url;
+        a.click();
+        URL.revokeObjectURL(url);
+        showToast(`${label} downloaded!`);
+      });
     }
 
     function exportHexList() {
@@ -4106,6 +4614,8 @@
     loadSavedPalettes();
     loadTheme();
     loadGeneratorControls();
+    initCodeExportModal();
+    initSwatchInfoModal();
     if (!loadPaletteFromUrl() && !loadCurrentPalette()) {
       colors = new Array(5).fill(null).map(() => ({ hex: "#000000", name: "", locked: false }));
       colors = generateSmartPaletteHexes().map((hex) => ({ hex, name: closestCssName(hex), locked: false }));
