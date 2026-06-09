@@ -234,9 +234,6 @@
       stroke-width: 2.2;
     }
 
-    .button.save {
-    }
-
     .button.danger {
       color: var(--danger);
     }
@@ -777,11 +774,6 @@
     @media (max-width: 760px) {
       .swatch-name,
       .hex-field,
-      .rgb-value {
-        text-align: left;
-      }
-
-      .swatch-name,
       .rgb-value {
         text-align: left;
       }
@@ -2229,28 +2221,6 @@
       return hex;
     }
 
-    function cmykPreviewHex(hex) {
-      const cmyk = rgbToCmyk(hexToRgb(hex));
-      const inkCoverage = cmyk.c + cmyk.m + cmyk.y + cmyk.k;
-      if (inkCoverage < 2) return hex;
-
-      const printedRgb = cmykToRgb({
-        c: clamp(cmyk.c * 0.98, 0, 100),
-        m: clamp(cmyk.m * 0.98, 0, 100),
-        y: clamp(cmyk.y * 0.96, 0, 100),
-        k: clamp(cmyk.k * 1.02, 0, 100)
-      });
-      const hsl = rgbToHsl(printedRgb);
-      const saturationLoss = hsl.s > 55 ? 0.86 : hsl.s > 28 ? 0.94 : 1;
-      const lightnessShift = cmyk.k > 55 ? -2 : cmyk.k > 25 ? -1 : 0;
-      const softenedRgb = hslToRgb({
-        h: hsl.h,
-        s: clamp(hsl.s * saturationLoss, 0, 100),
-        l: clamp(hsl.l + lightnessShift, 0, 100)
-      });
-      return rgbToHex(softenedRgb);
-    }
-
     function previewHex(hex) {
       return filteredHex(hex);
     }
@@ -2514,7 +2484,8 @@
         grip: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="9" cy="6" r="1.5" fill="currentColor"/><circle cx="15" cy="6" r="1.5" fill="currentColor"/><circle cx="9" cy="12" r="1.5" fill="currentColor"/><circle cx="15" cy="12" r="1.5" fill="currentColor"/><circle cx="9" cy="18" r="1.5" fill="currentColor"/><circle cx="15" cy="18" r="1.5" fill="currentColor"/></svg>',
         info: '<svg viewBox="0 0 24 24" aria-hidden="true"><circle cx="12" cy="12" r="10"></circle><line x1="12" y1="16" x2="12" y2="12"></line><line x1="12" y1="8" x2="12.01" y2="8"></line></svg>',
         undo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M3 7v6h6"></path><path d="M21 17a9 9 0 0 0-9-9 9 9 0 0 0-6 2.3L3 13"></path></svg>',
-        redo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>'
+        redo: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 7v6h-6"></path><path d="M3 17a9 9 0 0 1 9-9 9 9 0 0 1 6 2.3L21 13"></path></svg>',
+        download: '<svg viewBox="0 0 24 24" aria-hidden="true"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"></path><path d="M7 10l5 5 5-5"></path><path d="M12 15V3"></path></svg>'
       };
       return icons[name] || "";
     }
@@ -2636,14 +2607,6 @@
     // ── Color Info Modal ────────────────────────────────────────────────────
 
     function wcagContrastRatio(hex1, hex2) {
-      function relativeLuminance(hex) {
-        const { r, g, b } = hexToRgb(hex);
-        return [r, g, b].reduce((acc, c) => {
-          const s = c / 255;
-          return acc + (s <= 0.03928 ? s / 12.92 : Math.pow((s + 0.055) / 1.055, 2.4)) * [0.2126, 0.7152, 0.0722][acc === 0 ? 0 : acc === 0.2126 ? 1 : 2];
-        }, 0);
-      }
-      // proper luminance calculation
       function lum(hex) {
         const { r, g, b } = hexToRgb(hex);
         const chan = [r, g, b].map(c => {
@@ -2845,9 +2808,12 @@
       overlay.append(dialog);
       overlay.hidden = false;
 
-      overlay.addEventListener("click", (e) => {
-        if (e.target === overlay) closeColorInfoModal();
-      }, { once: false });
+      if (!overlay._clickBound) {
+        overlay._clickBound = true;
+        overlay.addEventListener("click", (e) => {
+          if (e.target === overlay) closeColorInfoModal();
+        });
+      }
 
       // close on Escape
       overlay._escHandler = (e) => { if (e.key === "Escape") closeColorInfoModal(); };
@@ -4508,7 +4474,7 @@
     filtersBtn.addEventListener("click", openFilters);
     adjustBtn.addEventListener("click", openAdjustments);
     saveBtn.addEventListener("click", savePalette);
-        const exportDropdown = document.getElementById("exportDropdown");
+    const exportDropdown = document.getElementById("exportDropdown");
     exportBtn.addEventListener("click", (e) => {
       e.stopPropagation();
       const open = !exportDropdown.hidden;
